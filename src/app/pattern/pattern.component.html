@@ -1,0 +1,34 @@
+<div [ngStyle]="{
+  'width.px': canvas.width,
+  'height.px': canvas.height
+
+}" #container>
+  <canvas 
+    #canvasBack
+
+    width="250" 
+    height="100"
+    style="
+    z-index: 0;
+    position: absolute;
+    "
+    >
+  </canvas>
+  <canvas tabindex="0" 
+    style="
+    z-index: 1;
+    background: transparent;
+    position: absolute;
+    "
+    #canvas
+    width="250" 
+    height="100"
+    (mousedown)="onMouseDown($event)"
+    (mouseenter)="onMouseEnter($event)"
+    (mouseleave)="onMouseLeave($event)"
+    (keydown)="onKeyDown($event)" 
+    >
+  </canvas>
+</div>
+
+

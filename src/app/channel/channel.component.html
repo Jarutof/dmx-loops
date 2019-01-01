@@ -1,0 +1,40 @@
+
+<!-- <table>
+  <tr>
+    <th>
+      <button (click)="addPattern()">add pattern</button>
+    </th>
+    <th>
+        <app-pattern *ngFor="let pattern of channel" [points]="pattern" #pat
+        (oninit)="onOnit($event)" 
+        (ondestroy)="onDestroy($event)" 
+        (onresize)="onResize($event)"
+        ></app-pattern>
+    </th>
+  </tr>
+</table> -->
+
+
+
+
+
+
+<table #container style="width: 100%; " [ngStyle]=" { backgroundColor: colorBack }" [ngStyle]="canDrag ? {'z-index': '100'}:{'z-index': '0'}" tabindex="0">
+    <tr >
+      <td style="width: 50px; min-width: 50px;">
+        <div (mousedown)="onDragAreaMouseDown($event)" style="height: 100%">
+
+        </div>
+          <!-- <button (click)="addPattern()">add pattern</button> -->
+      </td>
+      <td #patterns> 
+        <app-pattern style="height: 100px" *ngFor="let pattern of channel.patterns" [pattern]="pattern" #pat
+        (oninit)="onInit($event)"  
+        (ondestroy)="onDestroy($event)" 
+        (onresize)="onResize($event)"
+        (onfocus)="onFocus($event)" 
+        ></app-pattern>
+      </td>
+    </tr>
+  </table>
+  

@@ -1,0 +1,66 @@
+<table cellspacing="0" rules="all"  style="
+background-color:red; 
+height:100vh; 
+width:100vw;
+overflow:hidden;
+
+">
+  <tr style="height: 100px">
+    <td [colSpan]=3>
+      <div  style="width: 300px">
+          <div>
+              <input #groupname>
+              <button (click)="addChannelsGroup(groupname.value)">add channels group</button> 
+            </div>
+            <div>
+                <select #selectGroup style="width: 100%"  (change)="onChangeGroup($event, selectGroup.value)">
+                    <option *ngFor="let groupName of groupNames">{{groupName}}</option>
+                </select>
+            </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+
+    <td style="background-color:rgb(0, 255, 0); max-width: 200px; min-width: 200px; align-items: flex-start">   
+      <div style="height: 100%">
+        <div *ngIf="groupIndex >= 0" style="background-color:rgb(0, 255, 213);">
+          <div>Channels group</div>
+          <button (click)="addChannel(group)">add channel</button>
+          <button (click)="insertChannel(group)">insert channel</button>
+        </div>
+        <div *ngIf="model.selectedChannel" style="background-color:rgb(255, 0, 98); white-space:normal" >
+          <div>Channel {{ getGroup().channels.indexOf(model.selectedChannel.channel) + 1}}</div>
+          <button (click)="addPattern()">add pattern</button>
+          <button *ngIf="model.selectedPattern" (click)="insertPattern()">insert pattern</button>
+          <button *ngIf="model.selectedPattern" (click)="deletePattern()" >delete pattern</button>
+        </div>
+      </div>
+      
+    </td>
+    <td style=" background-color:yellow;">
+      <div style="
+      
+      height:100%;
+      width:70vw;
+      white-space: nowrap;
+      overflow: auto;
+      position: relative;
+      ">
+            <app-channels-group #group *ngIf="groupIndex >= 0" [group]="getGroup()" ></app-channels-group>
+
+           <!--  <app-channels-group *ngFor="let group of groups" [group]="group"></app-channels-group> -->
+      </div>
+    </td>
+    <td style="background-color:blue; width:100%;">  
+        <div style="height: 100%">
+        <div *ngIf="model.selectedPattern" style="background-color:rgb(0, 174, 255);">
+            <div>Pattern</div>
+            <p>
+              {{ model.selectedPattern.pattern.points.toString() }}
+            </p>
+        </div>
+       </div>
+    </td>
+  </tr>
+</table>

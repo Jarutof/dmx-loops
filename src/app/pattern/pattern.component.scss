@@ -1,0 +1,17 @@
+$cursor_state: default;
+
+:focus {
+    outline: none;
+}
+
+div {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+
+
+/* canvas :active, :focus {
+    outline: none;
+    cursor: cursor_state;
+} */
