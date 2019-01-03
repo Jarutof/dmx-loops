@@ -3,26 +3,38 @@ background-color:red;
 height:100vh; 
 width:100vw;
 overflow:hidden;
-
 ">
   <tr style="height: 100px">
     <td [colSpan]=3>
-      <div  style="width: 300px">
-          <div>
-              <input #groupname>
-              <button (click)="addChannelsGroup(groupname.value)">add channels group</button> 
-            </div>
-            <div>
-                <select #selectGroup style="width: 100%"  (change)="onChangeGroup($event, selectGroup.value)">
-                    <option *ngFor="let groupName of groupNames">{{groupName}}</option>
-                </select>
-            </div>
+      <div style="width: 300px">
+        <div>
+          <input #groupname>
+          <button (click)="
+          addChannelsGroup(groupname.value); 
+          selectGroup.value = groupname.value;
+          groupname.value = ''
+          ">add channels group</button> 
+        </div>
+        <div>
+          <select #selectGroup style="width: 100%" [selectedIndex]="groupIndex" (change)="groupIndex = selectGroup.selectedIndex">
+            <option *ngFor="let group of groups">{{group.name}}</option>
+          </select>
+        </div>
       </div>
+      <table width="100%"  style="text-align: center;">
+        <td > 
+          <button style="width: 250px">edit channels group</button>
+        </td>
+        <td> 
+            <button style="width: 250px">edit groups</button>
+        </td>
+      </table>
+      
     </td>
   </tr>
   <tr>
 
-    <td style="background-color:rgb(0, 255, 0); max-width: 200px; min-width: 200px; align-items: flex-start">   
+    <td [ngStyle]="{'width': leftWidth + 'px'}" style="background-color:rgb(0, 255, 0); min-width: 200px; align-items: flex-start">   
       <div style="height: 100%">
         <div *ngIf="groupIndex >= 0" style="background-color:rgb(0, 255, 213);">
           <div>Channels group</div>
@@ -38,26 +50,24 @@ overflow:hidden;
       </div>
       
     </td>
-    <td style=" background-color:yellow;">
-      <div style="
-      
+    <td>
+      <div [ngStyle]="{'width': midWidth + 'px'}" 
+      style="
       height:100%;
-      width:70vw;
       white-space: nowrap;
       overflow: auto;
       position: relative;
+      background-color:yellow;
       ">
             <app-channels-group #group *ngIf="groupIndex >= 0" [group]="getGroup()" ></app-channels-group>
-
-           <!--  <app-channels-group *ngFor="let group of groups" [group]="group"></app-channels-group> -->
       </div>
     </td>
-    <td style="background-color:blue; width:100%;">  
+    <td [ngStyle]="{'width': rightWidth + 'px'}" style="background-color:blue;">  
         <div style="height: 100%">
         <div *ngIf="model.selectedPattern" style="background-color:rgb(0, 174, 255);">
             <div>Pattern</div>
             <p>
-              {{ model.selectedPattern.pattern.points.toString() }}
+              {{ model.selectedPattern.pattern.points.length }}
             </p>
         </div>
        </div>

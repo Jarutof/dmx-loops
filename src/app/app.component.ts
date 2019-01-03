@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { DmxModelService, ChannelsGroup, Channel } from './dmx-model.service';
-import { groupBy } from 'rxjs/internal/operators/groupBy';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { DmxModelService, ChannelsGroup } from './dmx-model.service';
 import { ChannelsGroupComponent } from './channels-group/channels-group.component';
 import { ChannelComponent } from './channel/channel.component';
 
@@ -12,26 +11,39 @@ import { ChannelComponent } from './channel/channel.component';
 export class AppComponent implements OnInit {
   @ViewChild('group') group: ElementRef<HTMLElement>;
 
+  leftWidth: number = 200;
+  rightWidth: number = 200;
+  midWidth: number = 200;
+
   title = 'dmx-loops';
   groups: Array<ChannelsGroup>;
-  groupNames: string[] = [];
+  // groupNames: string[] = [];
   groupIndex: number = -1;
 
   selectedChannel: ChannelComponent;
 
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.midWidth = window.innerWidth - this.leftWidth - this.rightWidth;
+  }
   constructor(public model: DmxModelService) {}
 
   ngOnInit() {
     // this.groups = this.model.channelsGroups;
     this.groups = this.model.groups;
     this.selectedChannel = this.model.selectedChannel;
+    this.onResize();
   }
+
 
   onChangeGroup(e: Event, s) {
-    this.groupIndex = this.groupNames.indexOf(s);
-    console.log(this.groupIndex);
+    // this.groupIndex = this.groupNames.indexOf(s);
+    // this.groupIndex = this.groups.findIndex((g) => g.name == s);
+    console.log(s, this.groupIndex);
   }
-
+  check(v: HTMLElement) {
+    console.log(v.getBoundingClientRect());
+  }
   getGroup() {
     return this.groups[this.groupIndex];
   }
@@ -56,12 +68,10 @@ export class AppComponent implements OnInit {
     g.insertChannel(this.getGroup().channels.indexOf(this.model.selectedChannel.channel));
   }
 
-  addChannelsGroup(v) {
-    this.groupNames.push(v);
-    this.groupIndex = this.groupNames.indexOf(v);
-    this.groups.push(new ChannelsGroup());
-    
-    // this.groups.push([[[{x: 0, y: 0.5},{x: 1, y: 0.5}]]]);
+  addChannelsGroup(name) {
+    // this.groupNames.push(name);
+    this.groups.push(new ChannelsGroup(name));
+    // this.groupIndex = this.groupNames.indexOf(name);
+    this.groupIndex = this.groups.length - 1;
   }
-
 }

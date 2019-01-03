@@ -9,6 +9,7 @@ import { ChannelComponent } from '../channel/channel.component';
 })
 export class ChannelsGroupComponent implements OnInit {
   @ViewChild('row') row: ElementRef;
+  @ViewChild('container') container: ElementRef;
   @Input() id: number = 1;
   @Input() group: ChannelsGroup;
 
@@ -28,31 +29,32 @@ export class ChannelsGroupComponent implements OnInit {
     console.log(this.group.channels);
   }
 
-  onDragStart(e: MouseEvent, c: ChannelComponent, i: number) {
-    // console.log('onDragStart ', e.layerY + i * 100);
-    console.log(this.row);
-    this.yDragStart = e.clientY;
-    this.yDrag = e.clientY - this.yDragStart + i * 100;
+  onDragStart(e: MouseEvent, c: ChannelComponent, i: number, container: HTMLElement) {
+    console.log(e.clientY + container.parentNode.parentElement.scrollTop);
+    this.yDragStart = e.layerY;
+    this.yDrag = i * 100;
   }
-  onDrag(e: MouseEvent, c: ChannelComponent, i: number) {
-    console.log('onDrag ', e.layerY + i * 100);
-
-    this.yDrag = e.clientY - this.yDragStart + i * 100;
+  onDrag(e: MouseEvent, c: ChannelComponent, i: number, container: HTMLElement) {
+    this.yDrag = e.clientY - 100 + container.parentNode.parentElement.scrollTop - this.yDragStart; // + i * 100;
     const n = this.group.channels.indexOf(c.channel);
-    const pos = Math.trunc((e.clientY - 100) / 100);
-    // const pos = Math.round(this.yDrag / 100);
+    const pos = Math.trunc((this.yDrag + this.yDragStart) / 100);
     if (n != pos) {
       setTimeout(() => {
         this.group.channels.splice(n, 1);
         this.group.channels.splice(pos, 0, c.channel);
-        this.yDragStart = this.yDragStart - i * 100 + pos * 100;
-        this.yDrag = e.clientY - this.yDragStart + i * 100;
       }, 0);
     }
-    // console.log(Math.round(this.yDrag / 100) * 100);
+    /* console.log(e.y);
 
+    const delta = pos * 100 - container.parentNode.parentElement.scrollTop;
+    if (delta < 0) {
+      const o: ScrollToOptions = {};
+      o.top = container.parentNode.parentElement.scrollTop - 10;
+      console.log(o);
+      container.parentNode.parentElement.scrollTo(o);
+    } */
   }
   onDragEnd(e, c: ChannelComponent) {
-    //console.log('onDragEnd');
+    // console.log('onDragEnd');
   }
 }

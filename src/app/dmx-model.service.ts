@@ -23,8 +23,10 @@ export class Channel {
 }
 
 export class ChannelsGroup {
+  name: string;
   channels: Array<Channel>;
-  constructor() {
+  constructor(n: string) {
+    this.name = n;
     this.channels = [];
   }
 }
@@ -43,7 +45,7 @@ public selectedPattern: PatternComponent;
 public selectedChannel: ChannelComponent;
 
 public selectPattern(pattern: PatternComponent) {
-  if (this.selectedPattern == pattern) return;
+  if (this.selectedPattern == pattern) { return; }
   if (this.selectedPattern) {
     this.selectedPattern.unselect();
   }
@@ -52,7 +54,7 @@ public selectPattern(pattern: PatternComponent) {
 }
 
 public selectChannel(channel: ChannelComponent) {
-  if (this.selectedChannel == channel) return;
+  if (this.selectedChannel == channel) { return; }
   if (this.selectedPattern) {
     this.selectedPattern.unselect();
     this.selectedPattern = undefined;

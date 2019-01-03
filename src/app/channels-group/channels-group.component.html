@@ -1,5 +1,5 @@
 <!-- <button (click)="addChannel()">add channel</button> -->
-<table style="width: 100%">
+<table #container style="width: 100%;">
     <tr #row style="width: 100%">
       <div *ngFor="let channel of group.channels; index as i">
         <div *ngIf="c.canDrag" style="height: 100px"></div>
@@ -8,8 +8,8 @@
              'z-index': '2',
              'position':'absolute', 
              'top' : yDrag + 'px' } : { 'position':'relative','z-index': '0'}" 
-          (onDragStart)="onDragStart($event, c, i)" 
-          (onDrag)="onDrag($event, c, i)" 
+          (onDragStart)="onDragStart($event, c, i, container)" 
+          (onDrag)="onDrag($event, c, i, container)" 
           (onDragEnd)="onDragEnd($event, c)" 
           [channel]="channel"></app-channel>
       </div>
