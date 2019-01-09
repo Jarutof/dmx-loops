@@ -1,3 +1,37 @@
-<p>
-  edit-channels-group works!
-</p>
+<div class="view">
+  <div class="topArea" [ngStyle]="{'height': view.editChannelsGroup.topArea + 'px'}">
+      <div style="width: 300px">
+          <div>
+            <input #groupname>
+            <button (click)=" 
+            addChannelsGroup(groupname.value); 
+            selectGroup.value = groupname.value;
+            groupname.value = ''
+            ">add channels group</button> 
+          </div>
+          <div>
+            <select #selectGroup style="width: 100%" [selectedIndex]="model.groupIndex" (change)="onChangeGroup(selectGroup.selectedIndex)">
+              <option *ngFor="let group of model.groups">{{group.name}}</option>
+            </select>
+          </div>
+          <div *ngIf="model.groupIndex >= 0" style="background-color:rgb(0, 255, 213);">
+            <div>Channels group</div>
+            <button (click)="addChannel()">add channel</button>
+            <button (click)="insertChannel()">insert channel</button> 
+          </div>
+        </div>
+  </div> 
+  <div class="table">
+    <div class="leftArea" [ngStyle]="{'width': leftWidth + 'px'}" >
+      <app-channel-info></app-channel-info>
+    </div>
+    <div class="midArea" [ngStyle]="{'width': midWidth + 'px', 'height': view.editChannelsGroup.height + 'px'}">
+       <app-channels-group #group *ngIf="model.groupIndex >= 0" [group]="getGroup()"></app-channels-group>
+    </div>
+    <div class="rightArea" [ngStyle]="{'width': rightWidth + 'px'}">
+      cxvbxcvb
+    </div>
+  </div>
+</div>
+
+  

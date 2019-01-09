@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { DmxModelService, ChannelsGroup, Channel } from '../dmx-model.service';
 import { ChannelComponent } from '../channel/channel.component';
+import { ViewParamsService } from '../view-params.service';
 
 @Component({
   selector: 'app-channels-group',
@@ -16,26 +17,26 @@ export class ChannelsGroupComponent implements OnInit {
   yDrag: number;
   yDragStart: number;
 
-  constructor(private model: DmxModelService) { }
-  addChannel() {
+  constructor(private model: DmxModelService, public view: ViewParamsService) { }
+  /* addChannel() {
     this.group.channels.push(new Channel());
   }
 
   insertChannel(n: number) {
     this.group.channels.splice(n, 0, new Channel());
-  }
+  } */
 
   ngOnInit() {
-    console.log(this.group.channels);
   }
 
   onDragStart(e: MouseEvent, c: ChannelComponent, i: number, container: HTMLElement) {
-    console.log(e.clientY + container.parentNode.parentElement.scrollTop);
+    // console.log(e.clientY + container.parentNode.parentElement.scrollTop);
     this.yDragStart = e.layerY;
     this.yDrag = i * 100;
   }
-  onDrag(e: MouseEvent, c: ChannelComponent, i: number, container: HTMLElement) {
-    this.yDrag = e.clientY - 100 + container.parentNode.parentElement.scrollTop - this.yDragStart; // + i * 100;
+
+  onDrag(e, c: ChannelComponent, i: number, container: HTMLElement) {
+    this.yDrag = e.clientY - container.getBoundingClientRect().top - this.yDragStart; // + i * 100;
     const n = this.group.channels.indexOf(c.channel);
     const pos = Math.trunc((this.yDrag + this.yDragStart) / 100);
     if (n != pos) {

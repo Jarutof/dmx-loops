@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular
 import { DmxModelService, ChannelsGroup } from './dmx-model.service';
 import { ChannelsGroupComponent } from './channels-group/channels-group.component';
 import { ChannelComponent } from './channel/channel.component';
+import { ViewParamsService } from './view-params.service';
+import { CommandsService } from './commands.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +17,8 @@ export class AppComponent implements OnInit {
   rightWidth: number = 200;
   midWidth: number = 200;
 
+  currentWiewId = 0;
+
   title = 'dmx-loops';
   groups: Array<ChannelsGroup>;
   // groupNames: string[] = [];
@@ -26,7 +30,7 @@ export class AppComponent implements OnInit {
   onResize() {
     this.midWidth = window.innerWidth - this.leftWidth - this.rightWidth;
   }
-  constructor(public model: DmxModelService) {}
+  constructor(public model: DmxModelService, public view: ViewParamsService, public commands: CommandsService) {}
 
   ngOnInit() {
     // this.groups = this.model.channelsGroups;
@@ -61,11 +65,11 @@ export class AppComponent implements OnInit {
   }
 
   addChannel(g: ChannelsGroupComponent) {
-    g.addChannel();
+    /* g.addChannel(); */
   }
 
   insertChannel(g: ChannelsGroupComponent) {
-    g.insertChannel(this.getGroup().channels.indexOf(this.model.selectedChannel.channel));
+    /* g.insertChannel(this.getGroup().channels.indexOf(this.model.selectedChannel.channel)); */
   }
 
   addChannelsGroup(name) {
@@ -73,5 +77,13 @@ export class AppComponent implements OnInit {
     this.groups.push(new ChannelsGroup(name));
     // this.groupIndex = this.groupNames.indexOf(name);
     this.groupIndex = this.groups.length - 1;
+  }
+
+  Undo() {
+    this.commands.executeUndo();
+  }
+
+  Rendo() {
+    this.commands.executeRendo();
   }
 }

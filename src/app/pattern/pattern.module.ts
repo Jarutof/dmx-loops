@@ -10,4 +10,5 @@ import { PatternComponent } from './pattern.component';
   exports: [PatternComponent]
 })
 
-export class PatternModule { } 
+export class PatternModule { }
+

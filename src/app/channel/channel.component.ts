@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { DmxModelService, Channel, Pattern } from '../dmx-model.service';
 import { PatternComponent } from '../pattern/pattern.component';
+import { CommandsService } from '../commands.service';
 
 @Component({
   selector: 'app-channel',
@@ -23,10 +24,16 @@ export class ChannelComponent implements OnInit, AfterViewInit {
 
   canDrag: boolean = false;
 
-  constructor(private model: DmxModelService, private renderer: Renderer2) { }
+  constructor(private model: DmxModelService, private renderer: Renderer2, private commands: CommandsService) { }
 
   addPattern() {
-    this.channel.patterns.push(new Pattern());
+    const pattern = new Pattern();
+    this.commands.setCommands(() => {
+      this.channel.patterns.splice(this.channel.patterns.indexOf(pattern), 1);
+      this.model.selectedPattern = undefined;
+    }, () => {
+      this.channel.patterns.push(pattern);
+    });
   }
 
   insertPattern() {

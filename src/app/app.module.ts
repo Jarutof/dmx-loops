@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { PatternModule } from './pattern/pattern.module';
 import { ChannelModule } from './channel/channel.module';
 import { ChannelsGroupModule } from './channels-group/channels-group.module';
+import { EditChannelsGroupModule } from './edit-channels-group/edit-channels-group.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { ChannelsGroupModule } from './channels-group/channels-group.module';
     BrowserModule,
     AppRoutingModule,
     ChannelsGroupModule,
-    FormsModule
+    FormsModule,
+    EditChannelsGroupModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

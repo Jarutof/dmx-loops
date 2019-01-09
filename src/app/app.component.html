@@ -1,4 +1,72 @@
-<table cellspacing="0" rules="all"  style="
+<div class="overView">
+  <div [ngStyle]="{'height': view.headerHeight + 'px'}" style="display:flex; flex-direction: column;">
+    <div class="header" >
+      <div class="tab-selector" >
+        <div class="cell">
+          <button style="width: 250px" (click)="currentWiewId = 0;">edit channels group</button>
+        </div>
+        <div class="cell">
+          <button style="width: 250px" (click)="currentWiewId = 1;">edit groups</button>
+        </div>
+      </div>
+    </div>
+    <div style="background-color:rgb(255, 0, 255); display: block">
+      
+    </div>
+    <div style="
+      white-space: nowrap;
+      overflow:auto;
+      padding: 0px;
+      background-color:rgb(179, 255, 0); 
+      ">
+       <button style="width: 25px; " (click)="Undo()" >U</button> 
+       <button style="width: 25px"(click)="Rendo()" style="height: 100%">R</button>
+       <div *ngFor="let cmd of commands.commandsUndo;" style="
+       background: chartreuse; 
+       border: chocolate;  
+       width: 20px; 
+       height: 20px;
+       border-style: solid;
+       border-width: 1px;
+       display: inline-block;
+        "></div>
+    </div>
+  </div>
+
+  <!-- <div style="
+      white-space: nowrap;
+      overflow:auto;
+      padding: 0px;
+      height: 25px;
+    ">
+      
+      <button style="width: 25px; " (click)="Undo()" >U</button> 
+      <button style="width: 25px"(click)="Rendo()" style="height: 100%">R</button>
+      <div *ngFor="let cmd of commands.commandsUndo;" style="
+      background: chartreuse; 
+      border: chocolate; 
+      width: 20px; 
+      height: 20px;
+      border-style: solid;
+      border-width: 1px;
+      display: inline-block;
+       "></div>
+  </div> -->
+  <div class="content" [ngSwitch]="currentWiewId">
+    <div *ngSwitchCase="0">
+        <app-edit-channels-group></app-edit-channels-group>
+    </div>
+    <div *ngSwitchCase="1">
+        
+    </div>
+    <div *ngSwitchDefault>
+    
+    </div>
+  </div> 
+</div> 
+
+
+<!-- <table cellspacing="0" rules="all"  style="
 background-color:red; 
 height:100vh; 
 width:100vw;
@@ -33,7 +101,6 @@ overflow:hidden;
     </td>
   </tr>
   <tr>
-
     <td [ngStyle]="{'width': leftWidth + 'px'}" style="background-color:rgb(0, 255, 0); min-width: 200px; align-items: flex-start">   
       <div style="height: 100%">
         <div *ngIf="groupIndex >= 0" style="background-color:rgb(0, 255, 213);">
@@ -74,3 +141,4 @@ overflow:hidden;
     </td>
   </tr>
 </table>
+ -->

@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Renderer2, Output, EventEmitter, OnDestroy, AfterViewInit } from '@angular/core';
-import { DmxModelService, Pattern } from '../dmx-model.service';
+import { Pattern, Point } from '../dmx-model.service';
+import { CommandsService } from '../commands.service';
 
 @Component({
   selector: 'app-pattern',
@@ -16,9 +17,11 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() ondestroy = new EventEmitter<PatternComponent>();
   @Output() onfocus = new EventEmitter<PatternComponent>();
 
+  private pointIndex = 0;
+  private savedPoint: Point = {x: 0, y: 0};
 
-  private selectedPoint: {x: number; y: number};
-  private highlightedPoint: {x: number; y: number};
+  private selectedPoint: Point;
+  private highlightedPoint: Point;
   private ctx: CanvasRenderingContext2D;
   private ctxBack: CanvasRenderingContext2D;
   private mousedown: boolean = false;
@@ -47,7 +50,7 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   listenerMouseMove: () => void;
   listenerMouseUp: () => void;
 
-  constructor(private renderer: Renderer2, private model: DmxModelService) {
+  constructor(private renderer: Renderer2, private commands: CommandsService) {
   }
 
   ngAfterViewInit() {
@@ -109,8 +112,8 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   setWidth(w: number) {
     const oldWidth = this.width;
     this.width = w;
-    if (this.width < this.minWidth) this.width = this.minWidth;
-    if (this.width > this.maxWidth) this.width = this.maxWidth;
+    if (this.width < this.minWidth) { this.width = this.minWidth; }
+    if (this.width > this.maxWidth) { this.width = this.maxWidth; }
     this.pattern.width = this.width;
 
     this.deltaWidth = this.width - oldWidth;
@@ -168,14 +171,25 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     } else {
       this.canvas.nativeElement.style.cursor = 'pointer';
-      this.mouseDown = (e: MouseEvent) => {
+      this.mouseDown = (ev: MouseEvent) =>  {
         if (this.canDelete(this.highlightedPoint)) {
-          this.pattern.points.splice(this.pattern.points.indexOf(this.highlightedPoint), 1);
+          const point = this.highlightedPoint;
+          this.commands.setCommands(() => {
+            this.pattern.points.push(point);
+            this.pattern.points.sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
+            this.draw();
+          }, () => {
+            this.pattern.points.splice(this.pattern.points.indexOf(point), 1);
+            this.draw();
+          });
           this.highlightedPoint = undefined;
           this.drawSelectedLine = () => {};
           this.mousedown = false;
         } else {
           this.selectedPoint = this.highlightedPoint;
+          this.pointIndex = this.pattern.points.indexOf(this.selectedPoint);
+          this.savedPoint.x =  this.selectedPoint.x;
+          this.savedPoint.y =  this.selectedPoint.y;
           this.highlightedPoint = undefined;
         }
       };
@@ -235,11 +249,25 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
           this.ctx.fill();
           this.ctx.stroke();
           this.mouseDown = () => {
-            this.pattern.points.push({x: this.selectedPosition.x / this.width, y: this.selectedPosition.y / this.height});
-
+            const point = {x: this.selectedPosition.x / this.width, y: this.selectedPosition.y / this.height};
+            this.commands.setCommands(() => {
+              this.pattern.points.splice(this.pattern.points.indexOf(point), 1);
+              this.draw();
+            }, () => {
+              this.pattern.points.push(point);
+              this.pattern.points.sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
+              this.draw();
+            });
+            /* this.pattern.points.push({x: this.selectedPosition.x / this.width, y: this.selectedPosition.y / this.height});
             this.pattern.points.sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
             this.selectedPoint = this.pattern.points.find(p => this.getDistance({x: p.x * this.width, y: p.y * this.height}, this.selectedPosition) < 6);
+            */
+            this.selectedPoint = point;
+            this.pointIndex = this.pattern.points.indexOf(this.selectedPoint);
+            this.savedPoint.x = point.x;
+            this.savedPoint.y = point.y;
           };
+
           this.canvas.nativeElement.style.cursor = 'pointer';
 
         } else {
@@ -257,6 +285,40 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       this.onMouseMoveButtonDown(event);
     });
     this.listenerMouseUp = this.renderer.listen(document, 'mouseup', (event) => {
+
+
+      if (this.canResize) {
+        // this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
+        const swidth = this.savedWidth;
+        const nwidth = this.savedWidth + this.selectedPosition.x - this.savedPosition.x;
+        this.commands.setCommands(() => {
+          this.setWidth(swidth);
+        }, () => {
+          this.setWidth(nwidth);
+        });
+      } else {
+        if (this.selectedPoint) {
+          const index = this.pointIndex;
+          const spoint = {x: 0, y: 0};
+          const npoint = {x: 0, y: 0};
+          npoint.x = this.selectedPoint.x;
+          npoint.y = this.selectedPoint.y;
+          spoint.x = this.savedPoint.x;
+          spoint.y = this.savedPoint.y;
+          this.commands.setCommands(() => {
+            console.log(spoint, npoint);
+            this.pattern.points[index].x = spoint.x;
+            this.pattern.points[index].y = spoint.y;
+            console.log(spoint, npoint);
+            this.draw();
+          }, () => {
+            this.pattern.points[index].x = npoint.x;
+            this.pattern.points[index].y = npoint.y;
+            this.draw();
+          });
+        }
+      }
+
       this.mousedown = false;
       this.selectedPoint = undefined;
       this.canResize = false;
@@ -271,6 +333,7 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       if (this.listenerMouseUp) {
         this.listenerMouseUp();
       }
+
       this.draw();
     });
 
@@ -448,8 +511,4 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ctxBack.stroke();
   }
 
-
-  ngOnChanges() {
-    // this.draw();
-  }
 }

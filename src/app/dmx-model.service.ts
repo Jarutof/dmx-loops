@@ -2,7 +2,7 @@ import { Injectable, Output } from '@angular/core';
 import { PatternComponent } from './pattern/pattern.component';
 import { ChannelComponent } from './channel/channel.component';
 
-interface Point {
+export interface Point {
   x: number;
   y: number;
 }
@@ -43,6 +43,7 @@ public groups: Array<ChannelsGroup>;
 // public channelsGroups:  {x: number; y: number}[][][][] = [];
 public selectedPattern: PatternComponent;
 public selectedChannel: ChannelComponent;
+public groupIndex: number = -1;
 
 public selectPattern(pattern: PatternComponent) {
   if (this.selectedPattern == pattern) { return; }
