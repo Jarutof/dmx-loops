@@ -5,9 +5,9 @@ import { Injectable } from '@angular/core';
 })
 export class ViewParamsService {
 
-headerHeight = 70;
-editChannelsGroup = { topArea: 100, height: 500 };
-
+headerHeight = 100;
+editChannelsGroup = { topArea: 120, height: 100 };
+editGroups = { topArea: 120, height: 200 };
 constructor() { }
 
 }

@@ -1,3 +1,31 @@
+.grid {
+    display: grid;
+}
+.view {
+    width:100%;
+    height: 100%;
+    grid-template-columns: 100px auto 100px;
+    background-color:rgb(13, 13, 14); 
+}
+.topArea {
+    background: rgb(53, 53, 54); 
+    grid-column-start: 1; 
+    grid-column-end: 4
+}
+.leftArea {
+    background-color:rgb(35, 35, 36); 
+    vertical-align: top
+}
+.rightArea {
+    background-color:rgb(35, 35, 36); 
+    vertical-align: top
+}
+.midArea {
+    overflow: auto;
+    position: relative;
+    background-color:rgb(21, 21, 22);
+}
+/* 
 .view {
     width:100%;
     height: 100%;
@@ -36,3 +64,4 @@
     white-space: nowrap;
 }
 
+ */

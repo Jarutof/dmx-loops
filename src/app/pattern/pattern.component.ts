@@ -124,6 +124,8 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onMouseMoveButtonDown(e: MouseEvent) {
+    console.log('onMouseMoveButtonDown');
+
     // this.selectedPosition = { x: e.offsetX, y: e.offsetY };
     const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
     this.selectedPosition = { x: e.x - rect.left, y: e.y - rect.top };
@@ -161,6 +163,8 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onMouseMoveButtonUp(e: MouseEvent) {
+    console.log('onMouseMoveButtonUp');
+
     this.selectedPosition = { x: e.offsetX, y: e.offsetY };
     this.isCtrlKey = e.ctrlKey;
     this.highlightedPoint = this.pattern.points.find(p => this.getDistance({x: p.x * this.width, y: p.y * this.height}, this.selectedPosition) < 6);
@@ -228,6 +232,7 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   mouseDown(e: MouseEvent) {}
+  mouseMove(e: MouseEvent) {}
 
   findSelectedLine(): boolean {
     const filtred = this.pattern.points.filter(p => this.selectedPosition.x > p.x * this.width);
@@ -280,13 +285,15 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       return false;
     }
   }
+
+
   onMouseDown(e: MouseEvent) {
-    this.listenerMouseMove = this.renderer.listen(document, 'mousemove', (event) => {
+    this.mouseMove = this.onMouseMoveButtonDown;
+
+    /* this.listenerMouseMove = this.renderer.listen(document, 'mousemove', (event) => {
       this.onMouseMoveButtonDown(event);
-    });
+    }); */
     this.listenerMouseUp = this.renderer.listen(document, 'mouseup', (event) => {
-
-
       if (this.canResize) {
         // this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
         const swidth = this.savedWidth;
@@ -306,10 +313,10 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
           spoint.x = this.savedPoint.x;
           spoint.y = this.savedPoint.y;
           this.commands.setCommands(() => {
-            console.log(spoint, npoint);
+            // console.log(spoint, npoint);
             this.pattern.points[index].x = spoint.x;
             this.pattern.points[index].y = spoint.y;
-            console.log(spoint, npoint);
+            // console.log(spoint, npoint);
             this.draw();
           }, () => {
             this.pattern.points[index].x = npoint.x;
@@ -327,13 +334,18 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       if (e.target != event.target) {
         this.drawPoints = () => {};
       }
-      if (this.listenerMouseMove) {
-        this.listenerMouseMove();
+
+      const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
+        if (this.listenerMouseMove) {
+          this.listenerMouseMove();
+        }
+      } else {
+        this.mouseMove = this.onMouseMoveButtonUp;
       }
       if (this.listenerMouseUp) {
         this.listenerMouseUp();
       }
-
       this.draw();
     });
 
@@ -345,8 +357,10 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onMouseEnter(e: MouseEvent) {
     if (e.buttons != 1) {
-      this.listenerMouseMove = this.renderer.listen(e.target, 'mousemove', (event) => {
-        this.onMouseMoveButtonUp(event);
+      this.mouseMove = this.onMouseMoveButtonUp;
+      this.listenerMouseMove = this.renderer.listen(document /* e.target */, 'mousemove', (event) => {
+        this.mouseMove(event);
+        // this.onMouseMoveButtonUp(event);
       });
     }
 
@@ -374,6 +388,7 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       if (this.listenerMouseMove) {
         this.listenerMouseMove();
       }
+
       this.drawPoints = () => {};
       this.drawResizeArea = () => {};
     }
@@ -465,7 +480,6 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
     this.drawLines();
     this.drawPoints();
     this.drawResizeArea();
-
   }
 
   drawBack() {

@@ -1,4 +1,45 @@
-<div class="overView">
+<div class="container grid" [ngStyle]="{'grid-template-rows': view.headerHeight + 'px 1fr' }">
+  <div class="header grid">
+    <div class="tab-selector">
+      <button style="width: 250px" (click)="currentWiewId = 0;">edit channels group</button>
+      <button style="width: 250px" (click)="currentWiewId = 1;">edit groups</button>
+    </div>
+    <div>
+      <div style="
+      white-space: nowrap;
+      display: flex;
+      flex-direction: row;
+      margin: 1px 2px 1px 2px;
+      ">
+       <button style="width: 25px; " (click)="Undo()">U</button> 
+       <button style="width: 25px"(click)="Rendo()">R</button>
+       <div *ngFor="let cmd of commands.commandsUndo;" style="
+       background: rgb(86, 86, 87);
+       border: rgb(36, 36, 37);
+       border-radius: 5px;
+       height: 20px;
+       border-style: solid;
+       border-width: 1px;
+       display: inline-block;
+       flex: 0 1 20px;
+        "></div>
+      </div>
+    </div>
+  </div>
+  <div class="content" [ngSwitch]="currentWiewId">
+    <div *ngSwitchCase="0">
+      <app-edit-channels-group></app-edit-channels-group>
+    </div>
+    <div *ngSwitchCase="1">
+      <app-edit-groups></app-edit-groups>
+    </div>
+    <div *ngSwitchDefault>
+    
+    </div>
+  </div> 
+</div>
+   
+<!-- <div class="overView">
   <div [ngStyle]="{'height': view.headerHeight + 'px'}" style="display:flex; flex-direction: column;">
     <div class="header" >
       <div class="tab-selector" >
@@ -33,25 +74,6 @@
     </div>
   </div>
 
-  <!-- <div style="
-      white-space: nowrap;
-      overflow:auto;
-      padding: 0px;
-      height: 25px;
-    ">
-      
-      <button style="width: 25px; " (click)="Undo()" >U</button> 
-      <button style="width: 25px"(click)="Rendo()" style="height: 100%">R</button>
-      <div *ngFor="let cmd of commands.commandsUndo;" style="
-      background: chartreuse; 
-      border: chocolate; 
-      width: 20px; 
-      height: 20px;
-      border-style: solid;
-      border-width: 1px;
-      display: inline-block;
-       "></div>
-  </div> -->
   <div class="content" [ngSwitch]="currentWiewId">
     <div *ngSwitchCase="0">
         <app-edit-channels-group></app-edit-channels-group>
@@ -63,82 +85,4 @@
     
     </div>
   </div> 
-</div> 
-
-
-<!-- <table cellspacing="0" rules="all"  style="
-background-color:red; 
-height:100vh; 
-width:100vw;
-overflow:hidden;
-">
-  <tr style="height: 100px">
-    <td [colSpan]=3>
-      <div style="width: 300px">
-        <div>
-          <input #groupname>
-          <button (click)="
-          addChannelsGroup(groupname.value); 
-          selectGroup.value = groupname.value;
-          groupname.value = ''
-          ">add channels group</button> 
-        </div>
-        <div>
-          <select #selectGroup style="width: 100%" [selectedIndex]="groupIndex" (change)="groupIndex = selectGroup.selectedIndex">
-            <option *ngFor="let group of groups">{{group.name}}</option>
-          </select>
-        </div>
-      </div>
-      <table width="100%"  style="text-align: center;">
-        <td > 
-          <button style="width: 250px">edit channels group</button>
-        </td>
-        <td> 
-            <button style="width: 250px">edit groups</button>
-        </td>
-      </table>
-      
-    </td>
-  </tr>
-  <tr>
-    <td [ngStyle]="{'width': leftWidth + 'px'}" style="background-color:rgb(0, 255, 0); min-width: 200px; align-items: flex-start">   
-      <div style="height: 100%">
-        <div *ngIf="groupIndex >= 0" style="background-color:rgb(0, 255, 213);">
-          <div>Channels group</div>
-          <button (click)="addChannel(group)">add channel</button>
-          <button (click)="insertChannel(group)">insert channel</button>
-        </div>
-        <div *ngIf="model.selectedChannel" style="background-color:rgb(255, 0, 98); white-space:normal" >
-          <div>Channel {{ getGroup().channels.indexOf(model.selectedChannel.channel) + 1}}</div>
-          <button (click)="addPattern()">add pattern</button>
-          <button *ngIf="model.selectedPattern" (click)="insertPattern()">insert pattern</button>
-          <button *ngIf="model.selectedPattern" (click)="deletePattern()" >delete pattern</button>
-        </div>
-      </div>
-      
-    </td>
-    <td>
-      <div [ngStyle]="{'width': midWidth + 'px'}" 
-      style="
-      height:100%;
-      white-space: nowrap;
-      overflow: auto;
-      position: relative;
-      background-color:yellow;
-      ">
-            <app-channels-group #group *ngIf="groupIndex >= 0" [group]="getGroup()" ></app-channels-group>
-      </div>
-    </td>
-    <td [ngStyle]="{'width': rightWidth + 'px'}" style="background-color:blue;">  
-        <div style="height: 100%">
-        <div *ngIf="model.selectedPattern" style="background-color:rgb(0, 174, 255);">
-            <div>Pattern</div>
-            <p>
-              {{ model.selectedPattern.pattern.points.length }}
-            </p>
-        </div>
-       </div>
-    </td>
-  </tr>
-</table>
- -->
+</div>  -->

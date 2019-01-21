@@ -38,8 +38,6 @@ export class AppComponent implements OnInit {
     this.selectedChannel = this.model.selectedChannel;
     this.onResize();
   }
-
-
   onChangeGroup(e: Event, s) {
     // this.groupIndex = this.groupNames.indexOf(s);
     // this.groupIndex = this.groups.findIndex((g) => g.name == s);

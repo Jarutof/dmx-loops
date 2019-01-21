@@ -1,4 +1,3 @@
-<!-- <button (click)="addChannel()">add channel</button> -->
 <table #container style="width: 100%;">
     <tr #row style="width: 100%">
       <div *ngFor="let channel of group.channels; index as i">
@@ -6,25 +5,14 @@
         <app-channel #c  style="width: 100%;" [ngStyle]=
           "c.canDrag ? {
              'z-index': '2',
-             'position':'absolute', 
+             'position':'absolute',
+             'box-shadow': '0 0 30px rgba(0, 0, 0, 1)',
              'top' : yDrag + 'px' } : { 'position':'relative','z-index': '0'}" 
           (onDragStart)="onDragStart($event, c, i, container)" 
           (onDrag)="onDrag($event, c, i, container)" 
           (onDragEnd)="onDragEnd($event, c)" 
           [channel]="channel"></app-channel>
       </div>
-
-      <!-- <div>
-          <app-channel #c  style="width: 100%;" [ngStyle]=
-          "c.canDrag ? {
-             'z-index': '2',
-             'position':'absolute', 
-             'top' : yDrag + 'px' } : { 'position':'relative','z-index': '0'}" 
-          (onDragStart)="onDragStart($event, c, i)" 
-          (onDrag)="onDrag($event, c, i)" 
-          (onDragEnd)="onDragEnd($event, c)" 
-           *ngFor="let channel of group.channels; index as i" [channel]="channel"></app-channel>
-      </div> -->
     </tr> 
 </table>
 

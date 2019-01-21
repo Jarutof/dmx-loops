@@ -8,6 +8,7 @@ import { ChannelModule } from './channel/channel.module';
 import { ChannelsGroupModule } from './channels-group/channels-group.module';
 import { EditChannelsGroupModule } from './edit-channels-group/edit-channels-group.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EditGroupsModule } from './edit-groups/edit-groups.module';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     AppRoutingModule,
     ChannelsGroupModule,
+    EditGroupsModule,
     FormsModule,
     EditChannelsGroupModule,
     BrowserAnimationsModule,

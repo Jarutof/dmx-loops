@@ -31,6 +31,18 @@ export class ChannelsGroup {
   }
 }
 
+export class GroupElement {
+  position: Point = {x: 0, y: 0};
+  width: number = 100;
+  group: ChannelsGroup;
+}
+
+export class GroupChannel {
+  groups: Array<GroupElement> = [];
+  constructor() {
+    this.groups = [];
+  }
+}
 /* type Pattern = Array<{point: Point}>;
 type Channel = Array<{pattern: Pattern}>; */
 
@@ -39,6 +51,7 @@ type Channel = Array<{pattern: Pattern}>; */
 })
 export class DmxModelService  {
 public groups: Array<ChannelsGroup>;
+public groupChannels: Array<GroupChannel>;
 
 // public channelsGroups:  {x: number; y: number}[][][][] = [];
 public selectedPattern: PatternComponent;
@@ -70,6 +83,6 @@ public selectChannel(channel: ChannelComponent) {
 
 constructor() {
   this.groups = [];
+  this.groupChannels = [];
 }
-
 }

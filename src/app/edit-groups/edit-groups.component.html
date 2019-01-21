@@ -1,0 +1,38 @@
+<div class="view grid" [ngStyle]="{'grid-template-rows': view.editGroups.topArea + 'px 1fr' }">
+  <div class="topArea">
+    <div>
+      <button (click)="addGroupChannel()">create channel of group</button>
+    </div>  
+  </div>
+  <div class="leftArea">
+    <div *ngFor="let group of model.groups; let i = index">
+      <app-group-box [channelGroup]=group *ngIf="gb.canDrag && indexDragChannelGroup == -1"></app-group-box>
+      <app-group-box [channelGroup]=group #gb style="border-radius: 5px;" [ngStyle]=
+        "gb.canDrag && indexDragChannelGroup == -1 ? { 
+        'z-index': '2',
+        'position':'absolute',
+        'box-shadow': '0 0 30px rgba(0, 0, 0, 1)',
+        'width': dragSize.width + 'px',
+        'height': dragSize.height + 'px',
+        'top' : drag.y + 'px',
+        'left' : drag.x + 'px' } : { 'position':'relative','z-index': '0'}" 
+      (onDragStart)="onGroupDragStart($event, gb, group, i);" 
+      (onDrag)="onGroupDrag($event, gb, group, i, container);"
+      (onDragEnd)="onGroupDragEnd($event, gb, group, i);" 
+      ></app-group-box>
+    </div>
+  </div>
+  <div #container class="midArea" [ngStyle]="{'height': view.editGroups.height + 'px'}">
+    <app-group-channel #groupChannel 
+    (onMouseEnter)="onChannelMouseEnter($event, groupChannel, i)"
+    (onresize)="onChanelResize($event)"
+    (ondrag)="onGroupElementDrag($event, i, container)"
+     *ngFor="let gc of model.groupChannels; let i = index" 
+     [ngStyle]="{'height': channelHeight + 'px', 'width': channelWidth + 'px'}"
+     [groupChannel]="gc"
+     ></app-group-channel>
+  </div>
+  <div class="rightArea"> 
+    right
+  </div>
+</div>

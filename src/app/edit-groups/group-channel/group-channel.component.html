@@ -1,0 +1,7 @@
+<div class="channel">
+  <app-group-element style="position: absolute; height: inherit;" *ngFor="let element of groupChannel.groups" [groupElement]="element"
+  [ngStyle]="{'left': element.position.x + 'px', 'top': element.position.y + 'px'}"
+  (onresize)="onSizeChanged()"
+  (onDrag)="onDrag($event)"
+  ></app-group-element>
+</div>
