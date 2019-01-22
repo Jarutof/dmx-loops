@@ -7,7 +7,7 @@ import { GroupElementComponent } from './group-element/group-element.component';
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule, 
   ],
   declarations: [EditGroupsComponent, GroupChannelComponent, GroupBoxComponent, GroupElementComponent],
   exports: [EditGroupsComponent]

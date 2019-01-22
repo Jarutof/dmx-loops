@@ -4,7 +4,6 @@ import { ChannelsGroupComponent } from './channels-group/channels-group.componen
 import { ChannelComponent } from './channel/channel.component';
 import { ViewParamsService } from './view-params.service';
 import { CommandsService } from './commands.service';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -16,7 +15,6 @@ export class AppComponent implements OnInit {
   leftWidth: number = 200;
   rightWidth: number = 200;
   midWidth: number = 200;
-
   currentWiewId = 0;
 
   title = 'dmx-loops';

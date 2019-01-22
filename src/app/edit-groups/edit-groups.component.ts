@@ -4,6 +4,7 @@ import { ViewParamsService } from '../view-params.service';
 import { CommandsService } from '../commands.service';
 import { AppRoutingModule } from '../app-routing.module';
 import { GroupChannelComponent } from './group-channel/group-channel.component';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-edit-groups',
@@ -209,6 +210,13 @@ export class EditGroupsComponent implements OnInit {
     if (!max ) { return defaultWidth; }
     if (max.groups.length == 0 ) { return defaultWidth; }
     this.channelWidth =  Math.max(max.groups[max.groups.length - 1].position.x + max.groups[max.groups.length - 1].width, defaultWidth);
+  }
+
+
+  saveFile() {
+    const filename = 'ololo';
+    const blob = new Blob([JSON.stringify(this.model.groupChannels)], { type: 'text/plain' });
+    saveAs(blob, filename);
   }
 
   onChannelMouseEnter(e, g, index) {

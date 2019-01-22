@@ -98,6 +98,7 @@ export class GroupElementComponent implements OnInit {
       if (this.isReplace) {
         this.onDrag.emit({e: event, g: this.groupElement});
         this.groupElement.position.y = 0;
+        this.isReplace = false;
       }
 
       /* if (this.listenerMouseMove) {
@@ -195,6 +196,9 @@ export class GroupElementComponent implements OnInit {
           const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
           this.selectedPosition = { x: e.x - rect.left, y: e.y - rect.top };
           this.groupElement.position.x += this.selectedPosition.x - this.savedPosition.x;
+          if (this.groupElement.position.x < 0) {
+            this.groupElement.position.x = 0;
+          }
           this.setWidth(this.savedWidth + (savedPos - this.groupElement.position.x));
           this.isResize = true;
         };
@@ -208,6 +212,9 @@ export class GroupElementComponent implements OnInit {
           const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
           this.selectedPosition = { x: e.x - rect.left, y: e.y};
           this.groupElement.position.x += this.selectedPosition.x - this.savedPosition.x;
+          if (this.groupElement.position.x < 0) {
+            this.groupElement.position.x = 0;
+          }
           this.groupElement.position.y = this.selectedPosition.y - this.savedPosition.y;
           // this.isResize = true;
           this.isReplace = true;
