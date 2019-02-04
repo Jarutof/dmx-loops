@@ -45,7 +45,6 @@ export class GroupElementComponent implements OnInit {
     this.canvas.nativeElement.width = this.groupElement.width;
     this.width = this.canvas.nativeElement.width;
     this.height = this.canvas.nativeElement.height;
-    // this.ctxBack = this.canvasBack.nativeElement.getContext('2d');
     this.draw();
   }
   drawResizeArea() {}
@@ -274,28 +273,27 @@ export class GroupElementComponent implements OnInit {
     this.groupElement.group.channels.forEach((val, ci, cs) => {
       let pos = 0;
       let x = 0;
-
       val.patterns.forEach((pat, pi, ps) => {
         // this.ctx.moveTo(0, 0);
         // this.ctx.lineTo(this.width, this.height);
         /* this.ctx.moveTo(pat.points[0].x * this.width, pat.points[0].y * ci * this.height / this.groupElement.group.channels.length);
         */
         const w = pat.width * this.width / totalWidth;
-        x = pat.points[0].x * w + pos;
+        x = pat.getPoints()[0].x * w + pos;
         if (pi == 0) {
-          this.ctx.moveTo(x, pat.points[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+          this.ctx.moveTo(x, pat.getPoints()[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
         }
 
         // this.ctx.moveTo(x, pat.points[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
-        for (let i = 0; i < pat.points.length; i++) {
-          x = pat.points[i].x * w + pos;
+        for (let i = 0; i < pat.getPoints().length; i++) {
+          x = pat.getPoints()[i].x * w + pos;
           this.ctx.lineTo(x,
-          pat.points[i].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+          pat.getPoints()[i].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
         }
         if (pi == val.patterns.length - 1) {
           if (x < this.width) {
             this.ctx.lineTo(this.width,
-              pat.points[pat.points.length - 1].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+              pat.getPoints()[pat.getPoints().length - 1].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
           }
         }
         // this.ctx.stroke();

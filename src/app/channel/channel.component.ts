@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { DmxModelService, Channel, Pattern } from '../dmx-model.service';
+import { DmxModelService, Channel, Pattern, ColorChannel, PointsPattern, ColorPattern } from '../dmx-model.service';
 import { PatternComponent } from '../pattern/pattern.component';
 import { CommandsService } from '../commands.service';
 
@@ -27,7 +27,12 @@ export class ChannelComponent implements OnInit, AfterViewInit {
   constructor(private model: DmxModelService, private renderer: Renderer2, private commands: CommandsService) { }
 
   addPattern() {
-    const pattern = new Pattern();
+    let pattern;
+    if (this.channel instanceof ColorChannel) {
+      pattern = new ColorPattern();
+    } else {
+      pattern = new PointsPattern();
+    }
     this.commands.setCommands(() => {
       this.channel.patterns.splice(this.channel.patterns.indexOf(pattern), 1);
       this.model.selectedPattern = undefined;
@@ -38,7 +43,7 @@ export class ChannelComponent implements OnInit, AfterViewInit {
 
   insertPattern() {
     const n = this.channel.patterns.indexOf(this.model.selectedPattern.pattern);
-    this.channel.patterns.splice(n, 0, new Pattern());
+    this.channel.patterns.splice(n, 0, new PointsPattern());
   }
 
   deletePattern() {
@@ -85,7 +90,8 @@ export class ChannelComponent implements OnInit, AfterViewInit {
     const index = this.patterns.indexOf(p);
 
     if (index < this.patterns.length - 1) {
-      this.patterns[index + 1].setWidth(this.patterns[index + 1].width - p.deltaWidth);
+      this.patterns[index + 1].drawer.setWidth(this.patterns[index + 1].drawer.getWidth() - p.drawer.getDeltaWidth());
+      // this.patterns[index + 1].drawer.setWidth(this.patterns[index + 1].drawer.width - p.drawer.deltaWidth);
     }
   }
 

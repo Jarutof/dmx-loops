@@ -1,0 +1,95 @@
+<div (click)="onContainerClicked($event)" class="modal" tabindex="-1" [ngClass]="{'in': visibleAnimate}"
+
+[ngStyle]="{
+  'display': visible ? 'block' : 'none', 
+  'opacity': visibleAnimate ? 1 : 0
+}
+  ">
+  <div class="grid container" style="width:300px; height: 300px;  position: relative;"
+  [ngStyle]="{
+    'left.px': position.x,
+    'top.px': position.y
+  }"
+  >
+  
+  <div class="topArea">
+    <img src="assets/chessBox.png" alt="" style="
+    position: absolute;
+    clip-path: inset(0 0 0 0 round 5px);
+    ">
+    <div class="colorBox" [ngStyle]="{'background': colorRGBA}"></div>
+  </div>
+  <div class="leftArea">
+    <div class="colorBlock">
+      <div *ngFor="let c of palette" [ngStyle]="{background: c}" class="paletteItem" (click)="onPaletteItemClick(c)" ></div>
+    </div>
+  </div>
+  <div class="rightArea" #container
+    (mousedown)="onAlphaMouseDown($event)">
+    <div style="width: 32px; position: relative; display: flex; justify-content: center;">
+      <img src="assets/chess.png" alt="" style=" pointer-events:none;
+      position: absolute;
+      ">
+      <div style="height: 100%; width: 100%;
+      position: absolute; "
+      [ngStyle]="{'background': 'linear-gradient(to top, #fd000000 ,' + colorRGB + ')'}"
+      ></div>
+      <div  [ngStyle]="{'top.px': 180 - 176 * alpha / 255 - 4}" style="
+      
+        box-shadow: 0 0 5px rgb(0, 0, 0);
+        position: absolute;
+        background: transparent;
+        border: 1px solid rgb(255, 255, 255);
+        width: 34px; 
+        height: 3px;
+        pointer-events:none;" >
+      </div>
+    </div>
+      
+  </div>
+  <div class="bottomArea">
+    <div class="button" (click)="onButtonDown()">Done</div>
+  </div>
+  <div class="midArea">
+    <div>
+        <canvas #canvasBack
+        (mousedown)="onMouseDown($event)"
+        style=" position: absolute;"
+        >
+        </canvas>
+        <canvas #canvas
+        (mousedown)="onMouseDown($event)"
+        style="background: transparent;  z-index: 1; position: absolute;"
+        >
+        </canvas>
+    </div>
+  </div>
+</div>
+  
+ <!--  <div class="modal-dialog" 
+  style="background: rgb(27, 220, 20)"
+  
+  
+  >
+    <div class="modal-content"
+    [ngStyle]="{
+      'left.px': position.x,
+      'top.px': position.y
+    }
+      "
+      style="background: crimson;
+    
+  "
+    >
+      <div class="modal-header">
+        <ng-content select=".app-modal-header"></ng-content>
+      </div>
+      <div class="modal-body">
+        <ng-content select=".app-modal-body"></ng-content>
+      </div>
+      <div class="modal-footer">
+        <ng-content select=".app-modal-footer"></ng-content>
+      </div>
+    </div>
+  </div> -->
+</div>

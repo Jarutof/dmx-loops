@@ -6,4 +6,9 @@
     border-style: solid;
     height: 40px;
     min-width: 50px;
+
+}:hover  {
+    z-index: 2;
+    background: #2a2a2b; /* Цвет фона под ссылкой */ 
+    box-shadow: 0 0 30px rgba(0, 0, 0, 1);
 }

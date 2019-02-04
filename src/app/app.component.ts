@@ -4,6 +4,8 @@ import { ChannelsGroupComponent } from './channels-group/channels-group.componen
 import { ChannelComponent } from './channel/channel.component';
 import { ViewParamsService } from './view-params.service';
 import { CommandsService } from './commands.service';
+import { ModalWindowService } from './modal-window.service';
+import { ColorpickerWindowComponent } from './colorpicker-window/colorpicker-window.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,7 +13,7 @@ import { CommandsService } from './commands.service';
 })
 export class AppComponent implements OnInit {
   @ViewChild('group') group: ElementRef<HTMLElement>;
-
+  @ViewChild('modalColorpicker') modalColorpicker: ColorpickerWindowComponent;
   leftWidth: number = 200;
   rightWidth: number = 200;
   midWidth: number = 200;
@@ -28,10 +30,11 @@ export class AppComponent implements OnInit {
   onResize() {
     this.midWidth = window.innerWidth - this.leftWidth - this.rightWidth;
   }
-  constructor(public model: DmxModelService, public view: ViewParamsService, public commands: CommandsService) {}
+  constructor(private modal: ModalWindowService, public model: DmxModelService, public view: ViewParamsService, public commands: CommandsService) {}
 
   ngOnInit() {
     // this.groups = this.model.channelsGroups;
+    this.modal.colorPicker = this.modalColorpicker;
     this.groups = this.model.groups;
     this.selectedChannel = this.model.selectedChannel;
     this.onResize();

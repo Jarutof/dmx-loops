@@ -1,6 +1,7 @@
 <div [ngStyle]="{
   'width.px': canvas.width,
-  'height.px': canvas.height
+  'height.px': canvas.height,
+  'cursor': drawer.canResize ? 'e-resize':'pointer'
 
 }" #container>
   <canvas 
@@ -23,12 +24,18 @@
     #canvas
     width="250" 
     height="100"
-    (mousedown)="onMouseDown($event)"
-    (mouseenter)="onMouseEnter($event)"
-    (mouseleave)="onMouseLeave($event)"
-    (keydown)="onKeyDown($event)" 
+    (mousedown)="drawer.onMouseDown($event)"
+    (mouseenter)="drawer.onMouseEnter($event)"
+    (mouseleave)="drawer.onMouseLeave($event)"
+    (keydown)="drawer.onKeyDown($event)"
+    (click)="showColorPicker($event)" 
     >
   </canvas>
+  
+  
 </div>
+
+<!-- <app-colorpicker-window #modal></app-colorpicker-window> -->
+
 
 

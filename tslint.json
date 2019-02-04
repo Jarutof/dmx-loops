@@ -72,7 +72,7 @@
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
     "no-unnecessary-initializer": true,
-    "no-unused-expression": false,
+    "no-unused-expression": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
@@ -117,7 +117,7 @@
       "check-separator",
       "check-type"
     ],
-    "no-output-on-prefix": false,
+    "no-output-on-prefix": true,
     "use-input-property-decorator": true,
     "use-output-property-decorator": true,
     "use-host-property-decorator": true,

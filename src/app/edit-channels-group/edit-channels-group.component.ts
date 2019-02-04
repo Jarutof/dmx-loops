@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { DmxModelService, ChannelsGroup, Channel } from '../dmx-model.service';
+import { DmxModelService, ChannelsGroup, Channel, ColorChannel } from '../dmx-model.service';
 import { ViewParamsService } from '../view-params.service';
 import { CommandsService } from '../commands.service';
 
@@ -54,6 +54,17 @@ export class EditChannelsGroupComponent implements OnInit {
   addChannel() {
     // this.model.groups[this.model.groupIndex].channels.push(new Channel());
     const channel = new Channel();
+    const id = this.model.groupIndex;
+    this.commands.setCommands(() => {
+      const i = this.model.groups[id].channels.indexOf(channel);
+      this.model.groups[id].channels.splice(i, 1); // .push(channel);
+      this.model.selectedChannel = undefined;
+    }, () => {
+      this.model.groups[id].channels.push(channel);
+    });
+  }
+  addColorChannel() {
+    const channel = new ColorChannel();
     const id = this.model.groupIndex;
     this.commands.setCommands(() => {
       const i = this.model.groups[id].channels.indexOf(channel);

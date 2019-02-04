@@ -9,10 +9,12 @@ import { ChannelsGroupModule } from './channels-group/channels-group.module';
 import { EditChannelsGroupModule } from './edit-channels-group/edit-channels-group.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EditGroupsModule } from './edit-groups/edit-groups.module';
+import { ColorpickerWindowComponent } from './colorpicker-window/colorpicker-window.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    ColorpickerWindowComponent
   ],
   imports: [
     BrowserModule,
