@@ -70,8 +70,6 @@ export class EditGroupsComponent implements OnInit {
         groupChannelsArray[newIndex].groupChannel.groups.push(this.tempElement);
       }
       this.indexDragChannelGroup = newIndex;
-
-      // console.log(this.groupChannels.toArray().indexOf(gcc));
     } else {
       if (newIndex != -1) {
         this.tempElement.position.x = e.clientX - gcc.elementRef.nativeElement.getBoundingClientRect().x - this.tempElement.width / 2;
@@ -82,15 +80,6 @@ export class EditGroupsComponent implements OnInit {
   onGroupDragEnd(e: MouseEvent, elem, group, index) {
     if (this.indexDragChannelGroup != -1) {
       this.calculatesize(this.model.groupChannels[this.indexDragChannelGroup]);
-      /*this.model.groupChannels[this.indexDragChannelGroup].groups.sort((g1, g2) =>  g1.position > g2.position ? 1 : g1.position < g2.position ? -1 : 0 );
-      this.model.groupChannels[this.indexDragChannelGroup].groups.map(function(v, i, arr) {
-        if (i > 0) {
-          if (v.position < (arr[i - 1].position + arr[i - 1].width)) {
-            v.position = arr[i - 1].position + arr[i - 1].width;
-          }
-        }
-      });
-      this.calculateWidth();*/
     }
     this.indexDragChannelGroup = -1;
     this.tempElement = undefined;
@@ -113,58 +102,12 @@ export class EditGroupsComponent implements OnInit {
       groupChannelsArray[index].groupChannel.groups.splice(id, 1);
 
       groupChannelsArray[newIndex].groupChannel.groups.push(args.g);
-      console.log(args.g.position);
       this.calculatesize(this.model.groupChannels[newIndex]);
-
     }
-    /* if (newIndex != this.indexDragChannelGroup) {
-      if (newIndex != -1) {
-        if (this.indexDragChannelGroup != -1) {
-          const id = groupChannelsArray[this.indexDragChannelGroup].groupChannel.groups.indexOf(args.g);
-          groupChannelsArray[this.indexDragChannelGroup].groupChannel.groups.splice(id, 1);
-          groupChannelsArray[newIndex].groupChannel.groups.push(args.g);
-        }
-        this.indexDragChannelGroup = newIndex;
-      }
-    } else {
-      if (newIndex != -1) {
-        // this.tempElement.position.x = args.e.clientX - gcc.elementRef.nativeElement.getBoundingClientRect().x - this.tempElement.width / 2;
-        // if (this.tempElement.position.x < 0) { this.tempElement.position.x = 0; }
-      }
-    } */
-    /* const groupChannelsArray = this.groupChannelsComponents.toArray();
-    const containerRect = container.getBoundingClientRect();
-    this.setDrag(e.clientX - this.dragSize.width / 2, e.clientY - this.dragSize.height / 2);
-    let gcc: GroupChannelComponent = groupChannelsArray.find((g) => {
-      return this.rectContains(e.clientX, e.clientY, g.elementRef.nativeElement.getBoundingClientRect());
-    });
-    if (e.clientX < containerRect.left || e.clientX > containerRect.right) {
-      gcc = undefined;
-    }
-
-    const newIndex = this.groupChannelsComponents.toArray().indexOf(gcc);
-    if (newIndex != this.indexDragChannelGroup) {
-      if (this.indexDragChannelGroup != -1) {
-        const id = groupChannelsArray[this.indexDragChannelGroup].groupChannel.groups.indexOf(this.tempElement);
-        groupChannelsArray[this.indexDragChannelGroup].groupChannel.groups.splice(id, 1);
-      }
-      if (newIndex != -1) {
-        this.tempElement.position.x = e.clientX - gcc.elementRef.nativeElement.getBoundingClientRect().x - this.tempElement.width / 2;
-        groupChannelsArray[newIndex].groupChannel.groups.push(this.tempElement);
-      }
-      this.indexDragChannelGroup = newIndex;
-    } else {
-      if (newIndex != -1) {
-        this.tempElement.position.x = e.clientX - gcc.elementRef.nativeElement.getBoundingClientRect().x - this.tempElement.width / 2;
-        if (this.tempElement.position.x < 0) { this.tempElement.position.x = 0; }
-      }
-    } */
   }
 
   rectContains(x: number, y: number, rect: DOMRect) {
-    // console.log(rectParent, rectChild);
     return  y > rect.y && y < rect.height + rect.y;
-    // return  x > rect.x && x < rect.width + rect.x && y > rect.y && y < rect.height + rect.y;
   }
 
   onChanelResize(e) {
@@ -198,10 +141,8 @@ export class EditGroupsComponent implements OnInit {
     if ( this.model.groupChannels.length == 0) {
       return defaultWidth;
     }
-    console.log(this.model.groupChannels);
 
     const max = this.model.groupChannels.reduce(function(prev, current, id, arr) {
-      console.log(prev, current, id, arr);
       if (current.groups.length == 0) {
         return prev; } else if (prev.groups.length > 0) {
           return  (prev.groups[prev.groups.length - 1].position.x > current.groups[current.groups.length - 1].position.x) ? prev : current;
@@ -219,6 +160,9 @@ export class EditGroupsComponent implements OnInit {
     saveAs(blob, filename);
   }
 
+
   onChannelMouseEnter(e, g, index) {
   }
 }
+
+

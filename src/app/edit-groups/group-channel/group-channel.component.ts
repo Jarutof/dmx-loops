@@ -17,6 +17,7 @@ export class GroupChannelComponent implements OnInit {
   @Output() ondrag = new EventEmitter<MouseEvent>();
 
   @Input() groupChannel: GroupChannel;
+  @Input() channelId: number;
   constructor(private renderer: Renderer2, public elementRef: ElementRef) { }
 
   ngOnInit() {

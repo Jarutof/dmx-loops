@@ -3,8 +3,10 @@
     <div>
       <button (click)="addGroupChannel()">create channel of group</button>
       <button (click)="saveFile()">save</button>
+      <button (click)="model.saveBinary()">saveBin</button>
     </div>  
   </div>
+  
   <div class="leftArea">
     <div *ngFor="let group of model.groups; let i = index">
       <app-group-box [channelGroup]=group *ngIf="gb.canDrag && indexDragChannelGroup == -1"></app-group-box>
@@ -31,6 +33,7 @@
      *ngFor="let gc of model.groupChannels; let i = index" 
      [ngStyle]="{'height': channelHeight + 'px', 'width': channelWidth + 'px'}"
      [groupChannel]="gc"
+     [channelId]="i"
      ></app-group-channel>
   </div>
   <div class="rightArea"> 

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, Output, EventEmitter } from '@angular/core';
-import { GroupElement } from 'src/app/dmx-model.service';
+import { GroupElement, Pattern, PointsPattern, RGBAPoint } from 'src/app/dmx-model.service';
 
 @Component({
   selector: 'app-group-element',
@@ -20,7 +20,7 @@ export class GroupElementComponent implements OnInit {
   private colorBackLigth_focus: string = '#666';
 
   private isResize: boolean = false;
-  private isReplace: boolean = false;
+  public isReplace: boolean = false;
   private savedPosition: {x: number; y: number};
   private savedWidth: number;
 
@@ -269,38 +269,18 @@ export class GroupElementComponent implements OnInit {
       if (tw > totalWidth) { totalWidth = tw; }
     });
     this.ctx.beginPath();
-
+    this.ctx.shadowBlur = 0;
     this.groupElement.group.channels.forEach((val, ci, cs) => {
       let pos = 0;
-      let x = 0;
       val.patterns.forEach((pat, pi, ps) => {
-        // this.ctx.moveTo(0, 0);
-        // this.ctx.lineTo(this.width, this.height);
-        /* this.ctx.moveTo(pat.points[0].x * this.width, pat.points[0].y * ci * this.height / this.groupElement.group.channels.length);
-        */
-        const w = pat.width * this.width / totalWidth;
-        x = pat.getPoints()[0].x * w + pos;
-        if (pi == 0) {
-          this.ctx.moveTo(x, pat.getPoints()[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+        if (pat instanceof PointsPattern) {
+          this.drawPointsPattern(pat, pi, ci, totalWidth, pos, val.patterns.length);
+        } else {
+          this.drawColorPattern(pat, pi, ci, totalWidth, pos, val.patterns.length);
         }
-
-        // this.ctx.moveTo(x, pat.points[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
-        for (let i = 0; i < pat.getPoints().length; i++) {
-          x = pat.getPoints()[i].x * w + pos;
-          this.ctx.lineTo(x,
-          pat.getPoints()[i].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
-        }
-        if (pi == val.patterns.length - 1) {
-          if (x < this.width) {
-            this.ctx.lineTo(this.width,
-              pat.getPoints()[pat.getPoints().length - 1].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
-          }
-        }
-        // this.ctx.stroke();
         pos += this.width * pat.width / totalWidth;
       });
     });
-    this.ctx.stroke();
     this.ctx.beginPath();
     this.ctx.strokeStyle = '#808080';
     this.ctx.shadowColor = '#DD8';
@@ -314,6 +294,45 @@ export class GroupElementComponent implements OnInit {
     this.ctx.lineTo(this.width - 0.5, this.height);
     this.ctx.stroke();
     this.drawResizeArea();
+
+  }
+
+  drawColorPattern(pat: Pattern, pi: number, ci: number, totalWidth: number, pos: number, length: number) {
+    const w = pat.width * this.width / totalWidth;
+    const x = pat.getPoints()[0].x * w + pos;
+    this.ctx.beginPath();
+    this.ctx.rect(x, ci * this.height / this.groupElement.group.channels.length,
+      w,
+      this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+    const gradient = this.ctx.createLinearGradient(x, 0, x + w, 0);
+    pat.getPoints().forEach((p: RGBAPoint, i) => {
+      gradient.addColorStop(p.x, p.y.toString());
+    });
+    this.ctx.fillStyle =  gradient;
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
+
+  drawPointsPattern(pat: Pattern, pi: number, ci: number, totalWidth: number, pos: number, length: number) {
+    const w = pat.width * this.width / totalWidth;
+        let x = pat.getPoints()[0].x * w + pos;
+        if (pi == 0) {
+          this.ctx.moveTo(x, pat.getPoints()[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+        }
+
+        // this.ctx.moveTo(x, pat.points[0].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+        for (let i = 0; i < pat.getPoints().length; i++) {
+          x = pat.getPoints()[i].x * w + pos;
+          this.ctx.lineTo(x,
+          pat.getPoints()[i].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+        }
+        if (pi == length - 1) {
+          if (x < this.width) {
+            this.ctx.lineTo(this.width,
+              pat.getPoints()[pat.getPoints().length - 1].y * this.height / this.groupElement.group.channels.length + ci * this.height / this.groupElement.group.channels.length);
+          }
+        }
+    this.ctx.stroke();
 
   }
 }

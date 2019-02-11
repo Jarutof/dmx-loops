@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Renderer2, Output, EventEmitter, OnDestroy, AfterViewInit, ɵConsole } from '@angular/core';
-import { Pattern, Point, PointsPattern } from '../dmx-model.service';
+import { Pattern, Point, PointsPattern, ColorPattern, RGBAPoint } from '../dmx-model.service';
 import { CommandsService } from '../commands.service';
 import { PointsDrawer } from './points-drawer';
 import { Drawer } from './drawer';
@@ -23,14 +23,13 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() ondestroy = new EventEmitter<PatternComponent>();
   @Output() onfocus = new EventEmitter<PatternComponent>();
 
-  isShowpicker: boolean = false;
 
   drawer: Drawer;
   value;
   listenerMouseMove: () => void;
   listenerMouseUp: () => void;
 
-  constructor(private modal: ModalWindowService, public renderer: Renderer2, public commands: CommandsService) {
+  constructor(public modal: ModalWindowService, public renderer: Renderer2, public commands: CommandsService) {
   }
 
   ngAfterViewInit() {
@@ -63,10 +62,19 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.ondestroy.emit(this);
   }
-  showColorPicker(e: MouseEvent) {
-    this.modal.showColorPicker(e, (col: string) => {
-      console.log(col);
-    });
-    this.isShowpicker = true;
-  }
+  /* showColorPicker(e: MouseEvent) {
+    if (this.pattern instanceof ColorPattern) {
+      this.modal.showColorPicker(e, (col: string) => {
+        const r = parseInt(col.slice(1, 3), 16) / 255;
+        const g = parseInt(col.slice(3, 5), 16) / 255;
+        const b = parseInt(col.slice(5, 7), 16) / 255;
+        const point: RGBPoint = { x: e.offsetX / this.drawer.width, y: {r, g, b} };
+        console.log(e.clientX / this.drawer.width);
+        this.pattern.getPoints().push(point);
+        this.pattern.getPoints().sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
+        this.drawer.draw();
+        console.log(col);
+      });
+    }
+  } */
 }

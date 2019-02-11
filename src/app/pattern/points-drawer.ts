@@ -366,6 +366,7 @@ export class PointsDrawer extends Drawer {
 
 
       findResizeArea() {
+
         if (this.selectedPosition.x > this.width - this.widthResizeArea) {
           this.drawResizeArea = () => {
             this.ctx.beginPath();

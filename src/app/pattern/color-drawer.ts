@@ -1,6 +1,6 @@
 import { PatternComponent } from './pattern.component';
 import { Drawer } from './drawer';
-import { RGBPoint } from '../dmx-model.service';
+import { RGBAPoint, RGBA } from '../dmx-model.service';
 
 export class ColorDrawer extends Drawer {
     private colorBackDark_unfocus: string = '#252526';
@@ -12,9 +12,9 @@ export class ColorDrawer extends Drawer {
     private topPanelHeight: number = 20;
 
     private pointIndex = 0;
-    private savedPoint: RGBPoint = {x: 0, y: {r: 0, g: 0, b: 0}};
-    private selectedPoint: RGBPoint;
-    private highlightedPoint: RGBPoint;
+    private savedPoint: RGBAPoint = {x: 0, y: {r: 0, g: 0, b: 0, a: 0}};
+    private selectedPoint: RGBAPoint;
+    private highlightedPoint: RGBAPoint;
 
     private savedPosition: {x: number; y: number};
     private savedWidth: number;
@@ -34,7 +34,29 @@ export class ColorDrawer extends Drawer {
     onMouseDown(e: MouseEvent) {
         this.mouseDown(e);
         this.mouseDown = () => {};
+        let canShow = true;
+        setTimeout(() => canShow = false, 300);
         this.listenerMouseUp = this.component.renderer.listen(document, 'mouseup', (event) => {
+            const pointForPick: RGBAPoint = this.selectedPoint;
+            if ((!this.selectedPoint || canShow) && (this.getDistance( {x: e.x, y: e.y }, {x: event.x, y: event.y}) < 1)) {
+                    this.component.modal.showColorPicker(e, (col: string) => {
+                        const r = parseInt(col.slice(1, 3), 16) / 255;
+                        const g = parseInt(col.slice(3, 5), 16) / 255;
+                        const b = parseInt(col.slice(5, 7), 16) / 255;
+                        const a = parseInt(col.slice(7, 9), 16) / 255;
+                        if (pointForPick) {
+                            pointForPick.y = new RGBA(r, g, b, a);
+                            this.component.pattern.getPoints().sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
+                            this.draw();
+                        } else {
+                            const point: RGBAPoint = { x: e.offsetX / this.width, y: new RGBA(r, g, b, a) };
+                            this.component.pattern.getPoints().push(point);
+                            this.component.pattern.getPoints().sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
+                            this.draw();
+                        }
+                    });
+            }
+
             this.selectedPoint = undefined;
             if (event.target == this.component.canvas.nativeElement) {
                 this.mouseMove = this.onMouseHover;
@@ -108,7 +130,6 @@ export class ColorDrawer extends Drawer {
             };
         } else {
             this.mouseDown = () => {};
-
             if (!e.ctrlKey) {
                 /* this.mouseDown = () => {
                   const point = {x: this.selectedPosition.x / this.width, y: this.selectedPosition.y / this.height};
@@ -134,21 +155,32 @@ export class ColorDrawer extends Drawer {
         const rect: ClientRect = this.component.canvas.nativeElement.getBoundingClientRect();
         const nPos =  { x: e.x - rect.left, y: e.y - rect.top };
         this.selectedPosition = nPos;
-        if (this.selectedPoint != this.component.pattern.getPoints()[0] && this.selectedPoint != this.component.pattern.getPoints()[this.component.pattern.getPoints().length - 1]) {
-            const index = this.component.pattern.getPoints().indexOf(this.selectedPoint);
-            if (this.selectedPosition.x < this.component.pattern.getPoints()[index - 1].x * this.width) {
-              this.selectedPoint.x = this.component.pattern.getPoints()[index - 1].x + 0.0001;
-            } else
-            if (this.selectedPosition.x > this.component.pattern.getPoints()[index + 1].x * this.width) {
-              this.selectedPoint.x = this.component.pattern.getPoints()[index + 1].x - 0.0001;
-            } else  {
-              this.selectedPoint.x = this.selectedPosition.x / this.width;
+        if (this.selectedPoint) {
+            if (this.selectedPoint != this.component.pattern.getPoints()[0] && this.selectedPoint != this.component.pattern.getPoints()[this.component.pattern.getPoints().length - 1]) {
+                const index = this.component.pattern.getPoints().indexOf(this.selectedPoint);
+                if (this.selectedPosition.x < this.component.pattern.getPoints()[index - 1].x * this.width) {
+                  this.selectedPoint.x = this.component.pattern.getPoints()[index - 1].x + 0.0001;
+                } else
+                if (this.selectedPosition.x > this.component.pattern.getPoints()[index + 1].x * this.width) {
+                  this.selectedPoint.x = this.component.pattern.getPoints()[index + 1].x - 0.0001;
+                } else  {
+                  this.selectedPoint.x = this.selectedPosition.x / this.width;
+                }
+                this.draw();
             }
-            this.draw();
+        } else {
+            if (this.isResize) {
+                this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
+                if (e.shiftKey) {
+                  this.component.onresize.emit(this.component);
+                }
+              }
         }
     }
 
     findResizeArea() {
+        console.log('asd');
+
         if (this.selectedPosition.x > this.width - this.widthResizeArea) {
             this.canResize = true;
           this.drawResizeArea = () => {
@@ -160,9 +192,12 @@ export class ColorDrawer extends Drawer {
             this.ctx.stroke();
           };
           this.mouseDown = () => {
+            console.log('findResizeArea');
+
             this.isResize = true;
             this.savedPosition = {x: this.selectedPosition.x, y: this.selectedPosition.y};
             this.savedWidth = this.width;
+            this.mouseMove = this.onMouseDrag;
           };
           // this.component.canvas.nativeElement.style.cursor = 'e-resize';
         } else {
@@ -178,12 +213,14 @@ export class ColorDrawer extends Drawer {
         this.colorBackDark = this.colorBackDark_focus;
         this.colorBackLigth = this.colorBackLigth_focus;
         this.drawBack();
+        this.draw();
     }
     unselect() {
         this.isSelected = false;
         this.colorBackDark = this.colorBackDark_unfocus;
         this.colorBackLigth = this.colorBackLigth_unfocus;
         this.drawBack();
+        this.draw();
       }
     setWidth(w: number) {
         super.setWidth(w);
@@ -192,6 +229,22 @@ export class ColorDrawer extends Drawer {
     }
 
     drawBack() {
+        const cSize = 8;
+        const wc = this.width / cSize;
+        const hc = this.height / cSize;
+
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        for (let i = 0; i < wc; i ++) {
+            for (let j = 0; j < hc; j ++) {
+                this.ctxBack.beginPath();
+                this.ctxBack.fillStyle = i % 2 == 0 ? (j % 2 == 0 ? '#BFBFBF' : '#FFF') : (j % 2 != 0 ? '#BFBFBF' : '#FFF');
+                this.ctxBack.rect(i * cSize, j * cSize, cSize, cSize);
+                this.ctxBack.fill();
+                this.ctxBack.closePath();
+            }
+        }
+        return;
         this.ctxBack.shadowOffsetX = 0;
         this.ctxBack.shadowOffsetY = 0;
         this.ctxBack.shadowBlur = 0;
@@ -233,12 +286,19 @@ export class ColorDrawer extends Drawer {
         this.ctxBack.lineTo(this.width - 0.5, this.height);
         this.ctxBack.stroke();
     }
-    getRGBString(p: RGBPoint): string {
+    /* getRGBString(p: RGBAPoint): string {
         return '#' +
         ('00' + Math.round(p.y.r * 0xFF).toString(16)).slice(-2) +
         ('00' + Math.round(p.y.g * 0xFF).toString(16)).slice(-2) +
         ('00' + Math.round(p.y.b * 0xFF).toString(16)).slice(-2);
     }
+    getRGBAString(p: RGBAPoint): string {
+        return '#' +
+        ('00' + Math.round(p.y.r * 0xFF).toString(16)).slice(-2) +
+        ('00' + Math.round(p.y.g * 0xFF).toString(16)).slice(-2) +
+        ('00' + Math.round(p.y.b * 0xFF).toString(16)).slice(-2) +
+        ('00' + Math.round(p.y.a * 0xFF).toString(16)).slice(-2);
+    } */
     draw() {
         this.ctxBack.shadowOffsetX = 0;
         this.ctxBack.shadowOffsetY = 0;
@@ -248,8 +308,8 @@ export class ColorDrawer extends Drawer {
         this.ctx.rect(0, this.topPanelHeight, this.width, this.height - this.topPanelHeight);
         const gradient = this.ctx.createLinearGradient(0, 0, this.width, 0);
 
-        this.component.pattern.getPoints().forEach((p: RGBPoint, i) => {
-            gradient.addColorStop(p.x, this.getRGBString(p));
+        this.component.pattern.getPoints().forEach((p: RGBAPoint, i) => {
+            gradient.addColorStop(p.x, p.y.toString());
         });
         /* gradient.addColorStop(0.0, '#FF0000');
         gradient.addColorStop(0.4, '#FFFF00');
@@ -265,10 +325,9 @@ export class ColorDrawer extends Drawer {
         this.ctx.lineWidth = 1;
         this.ctx.strokeStyle = 'transparent';
 
-        this.component.pattern.getPoints().forEach((p: RGBPoint, i) => {
+        this.component.pattern.getPoints().forEach((p: RGBAPoint, i) => {
             this.ctx.beginPath();
-
-            this.ctx.fillStyle = this.getRGBString(p);
+            this.ctx.fillStyle = p.y.toString().slice(0, 7);
             this.ctx.arc(p.x * this.width, this.topPanelHeight / 2, this.topPanelHeight / 2 - 2, 0, 2 * Math.PI);
             this.ctx.fill();
             this.ctx.closePath();
@@ -277,7 +336,7 @@ export class ColorDrawer extends Drawer {
         if (this.selectedPoint) {
             this.ctx.beginPath();
 
-            this.ctx.fillStyle = this.getRGBString(this.selectedPoint);
+            this.ctx.fillStyle = this.selectedPoint.y.toString().slice(0, 7);
             this.ctx.arc(this.selectedPoint.x * this.width, this.topPanelHeight / 2, this.topPanelHeight / 2 - 2, 0, 2 * Math.PI);
             this.ctx.fill();
             this.ctx.closePath();
