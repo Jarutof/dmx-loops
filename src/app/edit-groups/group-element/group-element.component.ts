@@ -248,7 +248,7 @@ export class GroupElementComponent implements OnInit {
     this.ctx.shadowColor = '#000';
     this.ctx.shadowBlur = 4;
     this.ctx.lineWidth = 1;
-    this.ctx.strokeStyle = '#666';
+    this.ctx.strokeStyle = '#555';
 
     this.groupElement.group.channels.forEach((val, i, arr) => {
       this.ctx.moveTo(0, i * this.height / this.groupElement.group.channels.length);
@@ -314,6 +314,8 @@ export class GroupElementComponent implements OnInit {
   }
 
   drawPointsPattern(pat: Pattern, pi: number, ci: number, totalWidth: number, pos: number, length: number) {
+    this.ctx.beginPath();
+    this.ctx.lineWidth = 0.5;
     const w = pat.width * this.width / totalWidth;
         let x = pat.getPoints()[0].x * w + pos;
         if (pi == 0) {
@@ -333,6 +335,7 @@ export class GroupElementComponent implements OnInit {
           }
         }
     this.ctx.stroke();
+    this.ctx.closePath();
 
   }
 }

@@ -207,7 +207,14 @@ public saveBinary() {
 
   console.log(channels, totalWidth);
   list.addGange(this.intToByteArray(channels.length)); // max amp
-  list.insertRange(this.intToByteArray(list.count), 0); // max amp
+  list.insertRange(this.intToByteArray(list.count + 4), 0); // max amp
+  channels.forEach(c => {
+    list.addGange(this.intToByteArray(c.length));
+    c.forEach(p => {
+      list.addGange(this.doubleToByteArray(p.x));
+      list.addGange(this.doubleToByteArray(p.y));
+    });
+  });
   const filename = 'ololo.b';
     const blob = new Blob([list.toArray()], { type: 'application/octet-stream' });
     saveAs(blob, filename);
@@ -217,7 +224,8 @@ intToByteArray(number) {
     const longNum = new Int32Array(buffer);  // so equivalent to Float64
 
     longNum[0] = number;
-    return Uint8Array.from(new Int8Array(buffer)).reverse();  // reverse to get little endian
+    return Uint8Array.from(new Int8Array(buffer));
+    // return Uint8Array.from(new Int8Array(buffer)).reverse();  // reverse to get little endian
   }
 
   doubleToByteArray(number) {
@@ -225,7 +233,7 @@ intToByteArray(number) {
     const longNum = new Float64Array(buffer);  // so equivalent to Float64
 
     longNum[0] = number;
-    return Uint8Array.from(new Int8Array(buffer)).reverse();  // reverse to get little endian
+    return Uint8Array.from(new Int8Array(buffer));
   }
 
 constructor() {
