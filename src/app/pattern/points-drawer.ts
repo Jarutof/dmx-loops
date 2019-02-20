@@ -119,7 +119,10 @@ export class PointsDrawer extends Drawer {
           };
           this.findResizeArea();
           // this.findSelectedLine();
+        } else {
+          this.mouseDown = () => {};
         }
+
       } else {
         this.mouseDown = (ev: MouseEvent) =>  {
           this.isCtrlKey = ev.ctrlKey;
@@ -350,7 +353,7 @@ export class PointsDrawer extends Drawer {
         }
         if (this.selectedPoint) {
           this.ctx.beginPath();
-          this.ctx.arc( this.selectedPoint.x * this.width,  this.selectedPoint.y * this.height, 6, 0, 2 * Math.PI);
+          this.ctx.arc(this.selectedPoint.x * this.width,  this.selectedPoint.y * this.height, 6, 0, 2 * Math.PI);
           if (this.canDelete(this.selectedPoint)) {
             this.ctx.strokeStyle = 'transparent';
             this.ctx.fillStyle = '#F88';
