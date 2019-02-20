@@ -34,11 +34,16 @@ export interface RGBAPoint {
 export abstract class Pattern {
   width: number = -1;
   getPoints(): Array<any>  { return []; }
+  setPoints(p: Array<any>) {}
 }
 export class PointsPattern extends Pattern {
   points: Array<Point> = [];
   getPoints():  Array<Point> {
     return this.points;
+  }
+  setPoints(p: Array<Point>) {
+    this.points = [];
+    p.forEach(point => this.points.push({x: point.x, y: point.y}));
   }
   constructor() {
     super();
@@ -49,6 +54,10 @@ export class ColorPattern extends Pattern {
   points: Array<RGBAPoint> = [];
   getPoints():  Array<RGBAPoint> {
     return this.points;
+  }
+  setPoints(p: Array<RGBAPoint>) {
+    this.points = [];
+    p.forEach(point => this.points.push({x: point.x, y: point.y}));
   }
   constructor() {
     super();
@@ -100,6 +109,7 @@ public groups: Array<ChannelsGroup>;
 public groupChannels: Array<GroupChannel>;
 
 // public channelsGroups:  {x: number; y: number}[][][][] = [];
+public copyPattern: Pattern;
 public selectedPattern: PatternComponent;
 public selectedChannel: ChannelComponent;
 public groupIndex: number = -1;
@@ -133,8 +143,10 @@ getNormalGroup(g: GroupElement): Array<Array<Point>> {
   let id = 0;
   g.group.channels.forEach(c => {
     let xpos = 0;
+    let shift = 1;
     c.patterns.forEach(p => {
       if (p instanceof ColorPattern) {
+        shift = 3;
         p.getPoints().forEach(point => {
           if (!res[id]) {res[id] = new Array<Point>(); }
           if (!res[id + 1]) {res[id + 1] = new Array<Point>(); }
@@ -143,17 +155,16 @@ getNormalGroup(g: GroupElement): Array<Array<Point>> {
           res[id + 1].push({ x: point.x * p.width + xpos, y: point.y.g * point.y.a });
           res[id + 2].push({ x: point.x * p.width + xpos, y: point.y.b * point.y.a });
         });
-        id += 3;
-
       } else {
         p.getPoints().forEach(point => {
           if (!res[id]) {res[id] = new Array<Point>(); }
           res[id].push({ x: point.x * p.width + xpos, y: 1 - point.y });
         });
-        id++;
       }
       xpos += p.width;
     });
+
+    id += shift;
     maxWidth = Math.max(xpos, maxWidth);
   });
 
@@ -180,10 +191,11 @@ public saveBinary() {
       gc.groups.forEach((g) => {
         const normalGroup = this.getNormalGroup(g);
         maxCount = Math.max(normalGroup.length, maxCount);
+        console.log('normalGroup.length', normalGroup.length);
+
         if (channels.length < channelPos + normalGroup.length) {
           channels = channels.concat(new Array<Point>(channelPos + normalGroup.length - channels.length));
         }
-        console.log(normalGroup);
         normalGroup.forEach((arr, arrIndex) => {
           if (!channels[channelPos + arrIndex]) {
             channels[channelPos + arrIndex] = [];
@@ -218,8 +230,8 @@ public saveBinary() {
   const filename = 'ololo.b';
     const blob = new Blob([list.toArray()], { type: 'application/octet-stream' });
     saveAs(blob, filename);
-}
-intToByteArray(number) {
+  }
+  intToByteArray(number) {
     const buffer = new ArrayBuffer(4);         // JS numbers are 8 bytes long, or 64 bits
     const longNum = new Int32Array(buffer);  // so equivalent to Float64
 
@@ -236,8 +248,8 @@ intToByteArray(number) {
     return Uint8Array.from(new Int8Array(buffer));
   }
 
-constructor() {
-  this.groups = [];
-  this.groupChannels = [];
-}
+  constructor() {
+    this.groups = [];
+    this.groupChannels = [];
+  }
 }

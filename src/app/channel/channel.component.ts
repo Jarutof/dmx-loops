@@ -20,7 +20,7 @@ export class ChannelComponent implements OnInit, AfterViewInit {
   private colorBack_unfocus: string = '#252526';
   private colorBack_focus: string = '#454546';
 
-  private colorBack: string = '#444';
+  public colorBack: string = '#444';
 
   canDrag: boolean = false;
 

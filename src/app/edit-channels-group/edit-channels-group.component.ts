@@ -88,4 +88,18 @@ export class EditChannelsGroupComponent implements OnInit {
       this.model.groups[id].channels.splice(position, 0, new Channel());
     });
   }
+
+  deleteChannel() {
+    const channel = this.model.selectedChannel.channel;
+    const id = this.model.groupIndex;
+    const position = this.getGroup().channels.indexOf(this.model.selectedChannel.channel);
+
+    this.commands.setCommands(() => {
+      this.model.groups[id].channels.splice(position, 0, channel);
+    }, () => {
+      const i = this.model.groups[id].channels.indexOf(channel);
+      this.model.groups[id].channels.splice(i, 1);
+      this.model.selectedChannel = undefined;
+    });
+  }
 }

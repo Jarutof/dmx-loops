@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DmxModelService } from 'src/app/dmx-model.service';
+import { DmxModelService, Pattern, PointsPattern, ColorPattern } from 'src/app/dmx-model.service';
 
 @Component({
   selector: 'app-channel-info',
@@ -25,5 +25,19 @@ export class ChannelInfoComponent implements OnInit {
   }
   getGroup() {
     return this.model.groups[this.model.groupIndex];
+  }
+  copyPattern() {
+    if (this.model.selectedPattern.pattern instanceof PointsPattern) {
+      this.model.copyPattern = new PointsPattern();
+      this.model.copyPattern.setPoints(this.model.selectedPattern.pattern.getPoints());
+    } else {
+      this.model.copyPattern = new ColorPattern();
+      this.model.copyPattern.setPoints(this.model.selectedPattern.pattern.getPoints());
+    }
+
+  }
+  pastePattern() {
+    this.model.selectedPattern.pattern.setPoints(this.model.copyPattern.getPoints());
+    this.model.selectedPattern.drawer.draw();
   }
 }

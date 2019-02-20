@@ -4,5 +4,7 @@
         <button (click)="addPattern()" style="width: 100%">add pattern</button>
         <button *ngIf="model.selectedPattern" (click)="insertPattern()" style="width: 100%">insert pattern</button>
         <button *ngIf="model.selectedPattern" (click)="deletePattern()" style="width: 100%" >delete pattern</button>
-      </div>
+        <button *ngIf="model.selectedPattern" (click)="copyPattern()" style="width: 100%" >copy pattern</button>
+        <button *ngIf="model.selectedPattern" (click)="pastePattern()" style="width: 100%" >paste pattern</button>
+    </div>
 </div>

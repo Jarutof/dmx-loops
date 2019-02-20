@@ -19,7 +19,7 @@ export class GroupElementComponent implements OnInit {
   private colorBackDark_focus: string = '#454546';
   private colorBackLigth_focus: string = '#666';
 
-  private isResize: boolean = false;
+  public isResize: boolean = false;
   public isReplace: boolean = false;
   private savedPosition: {x: number; y: number};
   private savedWidth: number;
