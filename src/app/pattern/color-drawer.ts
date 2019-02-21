@@ -38,7 +38,7 @@ export class ColorDrawer extends Drawer {
         setTimeout(() => canShow = false, 300);
         this.listenerMouseUp = this.component.renderer.listen(document, 'mouseup', (event) => {
             const pointForPick: RGBAPoint = this.selectedPoint;
-            if ((!this.selectedPoint || canShow) && (this.getDistance( {x: e.x, y: e.y }, {x: event.x, y: event.y}) < 1)) {
+            if (!e.ctrlKey && (!this.selectedPoint || canShow) && (this.getDistance( {x: e.x, y: e.y }, {x: event.x, y: event.y}) < 1)) {
                     this.component.modal.showColorPicker(e, (col: string) => {
                         const r = parseInt(col.slice(1, 3), 16) / 255;
                         const g = parseInt(col.slice(3, 5), 16) / 255;
@@ -105,7 +105,8 @@ export class ColorDrawer extends Drawer {
         if (this.highlightedPoint) {
             this.mouseDown = (ev) => {
                 if (ev.ctrlKey) {
-                    /* const point = this.highlightedPoint;
+                    if (this.component.pattern.getPoints()[0] == this.highlightedPoint || this.component.pattern.getPoints()[this.component.pattern.getPoints().length - 1] == this.highlightedPoint) { return; }
+                    const point = this.highlightedPoint;
                     this.component.commands.setCommands(() => {
                       this.component.pattern.getPoints().push(point);
                       this.component.pattern.getPoints().sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
@@ -115,8 +116,6 @@ export class ColorDrawer extends Drawer {
                       this.draw();
                     });
                     this.highlightedPoint = undefined;
-                    this.drawSelectedLine = () => {};
-                    this.mousedown = false; */
                 } else {
                     this.selectedPoint = this.highlightedPoint;
                     this.pointIndex = this.component.pattern.getPoints().indexOf(this.selectedPoint);
@@ -155,6 +154,10 @@ export class ColorDrawer extends Drawer {
         const rect: ClientRect = this.component.canvas.nativeElement.getBoundingClientRect();
         const nPos =  { x: e.x - rect.left, y: e.y - rect.top };
         this.selectedPosition = nPos;
+        const q = 10;
+        if (e.shiftKey) {
+            this.selectedPosition = { x: Math.round(nPos.x / q) * q, y: Math.round(nPos.y / q) * q };
+          }
         if (this.selectedPoint) {
             if (this.selectedPoint != this.component.pattern.getPoints()[0] && this.selectedPoint != this.component.pattern.getPoints()[this.component.pattern.getPoints().length - 1]) {
                 const index = this.component.pattern.getPoints().indexOf(this.selectedPoint);

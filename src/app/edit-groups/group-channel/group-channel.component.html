@@ -1,4 +1,4 @@
-<div class="channel">
+<div #container class="channel" [ngStyle]=" { backgroundColor: colorBack }" tabindex="0">
   <div style="height: 100%;display: flex; justify-content: center; align-items: center">
     {{channelId + 1}}
   </div>
@@ -6,5 +6,6 @@
   [ngStyle]="{'left': element.position.x + 25 + 'px', 'top': element.position.y + 'px'}"
   (onresize)="onSizeChanged()"
   (onDrag)="onDrag($event)"
+  (onfocus)="onFocus($event)"
   ></app-group-element>
 </div>

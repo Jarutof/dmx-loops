@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { GroupElement, Pattern, PointsPattern, RGBAPoint } from 'src/app/dmx-model.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { GroupElement, Pattern, PointsPattern, RGBAPoint } from 'src/app/dmx-mod
   templateUrl: './group-element.component.html',
   styleUrls: ['./group-element.component.scss']
 })
-export class GroupElementComponent implements OnInit {
+export class GroupElementComponent implements OnInit, AfterViewInit {
   @Output() onDrag = new EventEmitter<{e: MouseEvent, g: GroupElement }>();
 
   private ctx: CanvasRenderingContext2D;
@@ -36,8 +36,11 @@ export class GroupElementComponent implements OnInit {
 
   @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
   @Output() onresize = new EventEmitter<GroupElementComponent>();
+  @Output() onfocus = new EventEmitter<GroupElementComponent>();
+
   // @ViewChild('canvasBack') canvasBack: ElementRef<HTMLCanvasElement>;
   @Input() groupElement: GroupElement;
+
   constructor(private renderer: Renderer2) { }
 
   ngOnInit() {
@@ -45,8 +48,14 @@ export class GroupElementComponent implements OnInit {
     this.canvas.nativeElement.width = this.groupElement.width;
     this.width = this.canvas.nativeElement.width;
     this.height = this.canvas.nativeElement.height;
+    this.canvas.nativeElement.addEventListener('focus', (e) => { this.onfocus.emit(this); });
+
     this.draw();
   }
+  ngAfterViewInit() {
+    setTimeout(() => this.canvas.nativeElement.focus(), 0);
+  }
+
   drawResizeArea() {}
   mouseDown(e: MouseEvent) {}
   mouseMove(e: MouseEvent) {}
@@ -228,6 +237,19 @@ export class GroupElementComponent implements OnInit {
       this.onMouseMoveButtonDown = (e) => {}; */
       this.canvas.nativeElement.style.cursor = 'default';
     }
+  }
+
+  select() {
+    // this.isSelected = true;
+    this.colorBackDark = this.colorBackDark_focus;
+    this.colorBackLigth = this.colorBackLigth_focus;
+    this.draw();
+}
+  unselect() {
+    // this.isSelected = false;
+    this.colorBackDark = this.colorBackDark_unfocus;
+    this.colorBackLigth = this.colorBackLigth_unfocus;
+    this.draw();
   }
 
   draw() {

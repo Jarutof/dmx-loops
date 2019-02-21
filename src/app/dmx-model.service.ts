@@ -3,6 +3,8 @@ import { PatternComponent } from './pattern/pattern.component';
 import { ChannelComponent } from './channel/channel.component';
 import { BytesList } from './BytesList';
 import { saveAs } from 'file-saver';
+import { GroupChannelComponent } from './edit-groups/group-channel/group-channel.component';
+import { GroupElementComponent } from './edit-groups/group-element/group-element.component';
 type WithValue<T> = T & { value: string; };
 export interface Point {
   x: number;
@@ -112,7 +114,32 @@ public groupChannels: Array<GroupChannel>;
 public copyPattern: Pattern;
 public selectedPattern: PatternComponent;
 public selectedChannel: ChannelComponent;
+public selectedGroupChannel: GroupChannelComponent;
+public selectedGroupElement: GroupElementComponent;
 public groupIndex: number = -1;
+
+public selectGroupElement(element: GroupElementComponent) {
+  if (this.selectedGroupElement == element) { return; }
+  if (this.selectedGroupElement) {
+    this.selectedGroupElement.unselect();
+  }
+  this.selectedGroupElement = element;
+  this.selectedGroupElement.select();
+}
+
+public selectGroupChannel(groupChannel: GroupChannelComponent) {
+  if (this.selectedGroupChannel == groupChannel) { return; }
+  if (this.selectedGroupElement) {
+    this.selectedGroupElement.unselect();
+    this.selectedGroupElement = undefined;
+  }
+
+  if (this.selectedGroupChannel) {
+    this.selectedGroupChannel.unselect();
+  }
+  this.selectedGroupChannel = groupChannel;
+  this.selectedGroupChannel.select();
+}
 
 public selectPattern(pattern: PatternComponent) {
   if (this.selectedPattern == pattern) { return; }
@@ -128,7 +155,7 @@ public selectChannel(channel: ChannelComponent) {
   if (this.selectedPattern) {
     this.selectedPattern.unselect();
     this.selectedPattern = undefined;
-}
+  }
 
   if (this.selectedChannel) {
     this.selectedChannel.unselect();
