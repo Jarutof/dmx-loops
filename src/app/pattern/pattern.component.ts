@@ -44,8 +44,6 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
       this.drawer = new ColorDrawer(this);
     }
     this.canvas.nativeElement.addEventListener('focus', (e) => { this.onfocus.emit(this); });
-        console.log('ngOnInit');
-    // this.drawer.drawBack();
     this.drawer.draw();
     this.oninit.emit(this);
   }
@@ -53,8 +51,6 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
   select() {
     this.drawer.select();
   }
-
-
   unselect() {
     this.drawer.unselect();
   }

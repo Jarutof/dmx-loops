@@ -5,6 +5,13 @@
       <button (click)="saveFile()">save</button>
       <button (click)="model.saveBinary()">saveBin</button>
     </div>  
+    <div>
+      <input #inputCount type="number" min="0" max="99" size="1" maxlength="2">
+      <button (click)="addGroupChannels(inputCount.value)">create channels</button>
+      <button (click)="addGroupChannelsCopy(inputCount.value)">create channels</button>
+      <button *ngIf="model.selectedGroupChannel" (click)="deleteChannel()">delete channel</button>
+      <button *ngIf="model.selectedGroupElement" (click)="deleteElement()">delete element</button>
+    </div>
   </div>
   
   <div class="leftArea">

@@ -170,25 +170,28 @@ export class GroupElementComponent implements OnInit, AfterViewInit {
     if (this.selectedPosition.x > this.width - this.widthResizeArea) {
         this.canvas.nativeElement.style.cursor = 'e-resize';
         this.drawResizeArea = () => {
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.width - this.widthResizeArea / 2, 0);
-        this.ctx.lineTo(this.width - this.widthResizeArea / 2, this.height);
-        this.ctx.lineWidth = this.widthResizeArea;
-        this.ctx.strokeStyle = '#FFFFFF10';
-        this.ctx.stroke();
-      };
-
-      this.mouseDown = () => {
-        this.onMouseMoveButtonDown = (e) => {
-          const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
-          this.selectedPosition = { x: e.x - rect.left, y: e.y - rect.top };
-          this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.width - this.widthResizeArea / 2, 0);
+          this.ctx.lineTo(this.width - this.widthResizeArea / 2, this.height);
+          this.ctx.lineWidth = this.widthResizeArea;
+          this.ctx.strokeStyle = '#FFFFFF10';
+          this.ctx.stroke();
         };
-        this.isResize = true;
-        this.savedPosition = {x: this.selectedPosition.x, y: this.selectedPosition.y};
-        this.savedWidth = this.width;
-      };
 
+        this.mouseDown = () => {
+          this.onMouseMoveButtonDown = (e) => {
+            const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
+            const q = 10;
+            this.selectedPosition = { x: e.x - rect.left, y: e.y - rect.top };
+            if (e.shiftKey) {
+              this.selectedPosition = { x: Math.floor(this.selectedPosition.x / q) * q, y: Math.floor(this.selectedPosition.y / q) * q };
+            }
+            this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
+          };
+          this.isResize = true;
+          this.savedPosition = {x: this.selectedPosition.x, y: this.selectedPosition.y};
+          this.savedWidth = this.width;
+        };
     } else if (this.selectedPosition.x < this.widthResizeArea) {
       this.canvas.nativeElement.style.cursor = 'e-resize';
       this.drawResizeArea = () => {
@@ -204,9 +207,15 @@ export class GroupElementComponent implements OnInit, AfterViewInit {
           const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
           this.selectedPosition = { x: e.x - rect.left, y: e.y - rect.top };
           this.groupElement.position.x += this.selectedPosition.x - this.savedPosition.x;
+          const q = 10;
+          if (e.shiftKey) {
+            this.groupElement.position.x = Math.floor(this.groupElement.position.x / q) * q;
+          }
+          // this.groupElement.position.x += this.selectedPosition.x - this.savedPosition.x;
           if (this.groupElement.position.x < 0) {
             this.groupElement.position.x = 0;
           }
+
           this.setWidth(this.savedWidth + (savedPos - this.groupElement.position.x));
           this.isResize = true;
         };
@@ -219,22 +228,21 @@ export class GroupElementComponent implements OnInit, AfterViewInit {
         this.onMouseMoveButtonDown = (e) => {
           const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
           this.selectedPosition = { x: e.x - rect.left, y: e.y};
+
           this.groupElement.position.x += this.selectedPosition.x - this.savedPosition.x;
+          const q = 10;
+          if (e.shiftKey) {
+            this.groupElement.position.x = Math.floor(this.groupElement.position.x / q) * q;
+          }
           if (this.groupElement.position.x < 0) {
             this.groupElement.position.x = 0;
           }
           this.groupElement.position.y = this.selectedPosition.y - this.savedPosition.y;
-          // this.isResize = true;
           this.isReplace = true;
-          // this.onDrag.emit({e, g: this.groupElement});
-          // console.log(this.selectedPosition.y, this.savedPosition.y);
         };
         this.savedPosition = {x: this.selectedPosition.x, y: me.y};
       };
       this.drawResizeArea = () => {};
-      /* this.drawResizeArea = () => {};
-      this.mouseDown = () => {};
-      this.onMouseMoveButtonDown = (e) => {}; */
       this.canvas.nativeElement.style.cursor = 'default';
     }
   }

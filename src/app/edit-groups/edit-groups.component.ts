@@ -32,6 +32,56 @@ export class EditGroupsComponent implements OnInit {
     this.calculateWidth();
   }
 
+
+  deleteElement() {
+    const element = this.model.selectedGroupElement.groupElement;
+    this.commands.setCommands(() => {
+      this.model.selectedGroupChannel.groupChannel.groups.push(element);
+    }, () => {
+      const id = this.model.selectedGroupChannel.groupChannel.groups.indexOf(element);
+      this.model.selectedGroupChannel.groupChannel.groups.splice(id, 1);
+      this.model.selectedGroupElement = undefined;
+    });
+  }
+
+  deleteChannel() {
+    const channel = this.model.selectedGroupChannel.groupChannel;
+    this.commands.setCommands(() => {
+      this.model.groupChannels.push(channel);
+    }, () => {
+      this.model.groupChannels.splice(this.model.groupChannels.indexOf(channel), 1);
+      this.model.selectedGroupChannel.groupChannel = undefined;
+    });
+  }
+
+  addGroupChannelsCopy(c: number) {
+    if (c <= 0) { return; }
+    const channels = new Array<GroupChannel>();
+    for (let i = 0; i < c; i++) {
+      channels.push(this.model.selectedGroupChannel.groupChannel.clone());
+    }
+    const oldChannels = this.model.groupChannels;
+    this.commands.setCommands(() => {
+      this.model.groupChannels = oldChannels;
+    }, () => {
+      this.model.groupChannels = channels;
+    });
+  }
+
+  addGroupChannels(c: number) {
+    if (c <= 0) { return; }
+    const channels = new Array<GroupChannel>();
+    for (let i = 0; i < c; i++) {
+      channels.push(new GroupChannel());
+    }
+    const oldChannels = this.model.groupChannels;
+    this.commands.setCommands(() => {
+      this.model.groupChannels = oldChannels;
+    }, () => {
+      this.model.groupChannels = channels;
+    });
+  }
+
   addGroupChannel() {
     const channel = new GroupChannel();
     this.commands.setCommands(() => {

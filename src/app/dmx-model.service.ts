@@ -81,6 +81,11 @@ export class ColorChannel extends Channel {
 export class ChannelsGroup {
   name: string;
   channels: Array<Channel>;
+  clone() {
+    const clone = new ChannelsGroup(name);
+    clone.channels = this.channels;
+    return clone;
+  }
   constructor(n: string) {
     this.name = n;
     this.channels = [];
@@ -91,13 +96,29 @@ export class GroupElement {
   position: Point = {x: 0, y: 0};
   width: number = 100;
   group: ChannelsGroup;
+  clone() {
+    const clone = new GroupElement();
+    clone.position.x = this.position.x;
+    clone.position.y = this.position.y;
+    clone.width = this.width;
+    clone.group = this.group.clone();
+    return clone;
+  }
 }
 
 export class GroupChannel {
   groups: Array<GroupElement> = [];
+  clone() {
+    const clone = new GroupChannel();
+    this.groups.forEach(g => {
+      clone.groups.push(g.clone());
+    });
+    return clone;
+  }
   constructor() {
     this.groups = [];
   }
+
 }
 /* type Pattern = Array<{point: Point}>;
 type Channel = Array<{pattern: Pattern}>; */
