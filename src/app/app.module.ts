@@ -10,22 +10,27 @@ import { EditChannelsGroupModule } from './edit-channels-group/edit-channels-gro
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EditGroupsModule } from './edit-groups/edit-groups.module';
 import { ColorpickerWindowComponent } from './colorpicker-window/colorpicker-window.component';
+import { HideableContainerComponent } from './hideable-container/hideable-container.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ColorpickerWindowComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ChannelsGroupModule,
-    EditGroupsModule,
-    FormsModule,
-    EditChannelsGroupModule,
-    BrowserAnimationsModule,
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+   declarations: [
+      AppComponent,
+      ColorpickerWindowComponent,
+   ],
+   imports: [
+      BrowserModule,
+      AppRoutingModule,
+      ChannelsGroupModule,
+      EditGroupsModule,
+      FormsModule,
+      EditChannelsGroupModule,
+      BrowserAnimationsModule,
+      SharedModule
+   ],
+   providers: [],
+   bootstrap: [
+      AppComponent
+   ]
 })
 export class AppModule { }

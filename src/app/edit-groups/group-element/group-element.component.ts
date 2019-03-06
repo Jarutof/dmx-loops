@@ -1,12 +1,12 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, Output, EventEmitter, AfterViewInit } from '@angular/core';
-import { GroupElement, Pattern, PointsPattern, RGBAPoint } from 'src/app/dmx-model.service';
+import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
+import { GroupElement, Pattern, PointsPattern, RGBAPoint, DmxModelService } from 'src/app/dmx-model.service';
 
 @Component({
   selector: 'app-group-element',
   templateUrl: './group-element.component.html',
   styleUrls: ['./group-element.component.scss']
 })
-export class GroupElementComponent implements OnInit, AfterViewInit {
+export class GroupElementComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() onDrag = new EventEmitter<{e: MouseEvent, g: GroupElement }>();
 
   private ctx: CanvasRenderingContext2D;
@@ -41,7 +41,7 @@ export class GroupElementComponent implements OnInit, AfterViewInit {
   // @ViewChild('canvasBack') canvasBack: ElementRef<HTMLCanvasElement>;
   @Input() groupElement: GroupElement;
 
-  constructor(private renderer: Renderer2) { }
+  constructor(private renderer: Renderer2, private model: DmxModelService) { }
 
   ngOnInit() {
     this.ctx = this.canvas.nativeElement.getContext('2d');
@@ -49,9 +49,14 @@ export class GroupElementComponent implements OnInit, AfterViewInit {
     this.width = this.canvas.nativeElement.width;
     this.height = this.canvas.nativeElement.height;
     this.canvas.nativeElement.addEventListener('focus', (e) => { this.onfocus.emit(this); });
-
+    this.model.GroupElementComponents.push(this);
     this.draw();
   }
+
+  ngOnDestroy() {
+    this.model.GroupElementComponents.splice(this.model.GroupElementComponents.indexOf(this), 1);
+  }
+
   ngAfterViewInit() {
     setTimeout(() => this.canvas.nativeElement.focus(), 0);
   }

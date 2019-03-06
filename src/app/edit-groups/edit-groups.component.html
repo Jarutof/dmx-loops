@@ -14,7 +14,7 @@
     </div>
   </div>
   
-  <div class="leftArea">
+  <div class="leftArea" [ngStyle]="{'height': view.editGroups.height + 'px'}">
     <div *ngFor="let group of model.groups; let i = index">
       <app-group-box [channelGroup]=group *ngIf="gb.canDrag && indexDragChannelGroup == -1"></app-group-box>
       <app-group-box [channelGroup]=group #gb style="border-radius: 5px;" [ngStyle]=
@@ -43,7 +43,19 @@
      [channelId]="i"
      ></app-group-channel>
   </div>
-  <div class="rightArea"> 
-    right
+  <div class="rightArea" [ngStyle]="{'height': view.editGroups.height + 'px'}"> 
+    <app-hideable-container headerName="decrease">
+      <input #inpChanNumb0 type="number" min="0" max="512" size="1">
+      <button (click)="onButtonDecreaseMod(inpChanNumb0.value)" style="width: 100%;">apply</button>
+    </app-hideable-container>
+    
+    <app-hideable-container headerName="increase">
+      <input #inpChanNumb1 type="number" min="0" max="512" size="1">
+      <button (click)="onButtonIncreaseMod(inpChanNumb1.value)" style="width: 100%;">apply</button>
+    </app-hideable-container>
+    <app-hideable-container headerName="rotation">
+        <input #chanRot type="number" min="0" max="512" size="1">
+        <button (click)="onButtonRotation(chanRot.value)" style="width: 100%;">apply</button>
+      </app-hideable-container>
   </div>
 </div>

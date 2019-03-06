@@ -35,11 +35,24 @@ export interface RGBAPoint {
 }
 export abstract class Pattern {
   width: number = -1;
+  clone() { return undefined; }
   getPoints(): Array<any>  { return []; }
   setPoints(p: Array<any>) {}
 }
 export class PointsPattern extends Pattern {
   points: Array<Point> = [];
+
+  clone() {
+    const clone = new PointsPattern();
+    clone.points = [];
+    clone.width = this.width;
+    this.points.forEach(p => {
+      clone.points.push({x: p.x, y: p.y});
+    });
+
+    return clone;
+  }
+
   getPoints():  Array<Point> {
     return this.points;
   }
@@ -54,6 +67,16 @@ export class PointsPattern extends Pattern {
 }
 export class ColorPattern extends Pattern {
   points: Array<RGBAPoint> = [];
+
+  clone() {
+    const clone = new ColorPattern();
+    clone.points = [];
+    clone.width = this.width;
+    this.points.forEach(p => {
+      clone.points.push({x: p.x, y: new RGBA(p.y.r, p.y.g, p.y.b, p.y.a ) });
+    });
+    return clone;
+  }
   getPoints():  Array<RGBAPoint> {
     return this.points;
   }
@@ -70,19 +93,48 @@ export class ColorPattern extends Pattern {
 
 export class Channel {
   patterns: Array<Pattern>;
+  getWidth() {
+    let res = 0;
+    this.patterns.forEach(p => res += p.width);
+    return res;
+  }
+  clone() {
+    const clone = new Channel();
+    this.patterns.forEach(p => {
+      clone.patterns.push(p.clone());
+    });
+    return clone;
+  }
   constructor() {
     this.patterns = [];
   }
 }
 
 export class ColorChannel extends Channel {
+
+  clone() {
+    const clone = new ColorChannel();
+    this.patterns.forEach(p => {
+      clone.patterns.push(p.clone());
+    });
+    return clone;
+  }
 }
 
 export class ChannelsGroup {
   name: string;
   channels: Array<Channel>;
+
+
+  deepClone() {
+    const clone = new ChannelsGroup(this.name);
+    this.channels.forEach(c => {
+      clone.channels.push(c.clone());
+    });
+    return clone;
+  }
   clone() {
-    const clone = new ChannelsGroup(name);
+    const clone = new ChannelsGroup(this.name);
     clone.channels = this.channels;
     return clone;
   }
@@ -108,6 +160,32 @@ export class GroupElement {
 
 export class GroupChannel {
   groups: Array<GroupElement> = [];
+
+  insertPoint(p: Point, n: number) {
+    let length = 0;
+    if (this.groups.length > 0) {
+      length = this.groups[this.groups.length - 1].position.x + this.groups[this.groups.length - 1].width;
+    }
+    const groupElement = this.groups.find(g => (p.x * length >= g.position.x) && (p.x * length < g.width));
+    const maxWidth = groupElement.group.channels[n].getWidth();
+    let pattern: Pattern;
+    let pos = 0;
+
+    for (let i = 0; i < groupElement.group.channels[n].patterns.length; i++) {
+      pattern = groupElement.group.channels[n].patterns[i];
+      if ((p.x * maxWidth >= pos) && (p.x * maxWidth < pos + pattern.width)) {
+        break;
+      }
+      pos += pattern.width;
+
+    }
+    pattern.getPoints().push({ x: (p.x * maxWidth - pos) / pattern.width, y: p.y });
+    pattern.getPoints().sort((p1, p2) =>  p1.x > p2.x ? 1 : p1.x < p2.x ? -1 : 0 );
+  }
+
+  insertRelativePoint(p: Point) {
+
+  }
   clone() {
     const clone = new GroupChannel();
     this.groups.forEach(g => {
@@ -137,6 +215,7 @@ public selectedPattern: PatternComponent;
 public selectedChannel: ChannelComponent;
 public selectedGroupChannel: GroupChannelComponent;
 public selectedGroupElement: GroupElementComponent;
+public GroupElementComponents: Array<GroupElementComponent> = [];
 public groupIndex: number = -1;
 
 public selectGroupElement(element: GroupElementComponent) {
@@ -185,11 +264,28 @@ public selectChannel(channel: ChannelComponent) {
   this.selectedChannel.select();
 }
 
-getNormalGroup(g: GroupElement): Array<Array<Point>> {
+getTotalLength(): number {
+  let res: number = 0;
+  this.groupChannels.forEach(gc => {
+    if (gc.groups.length > 0) {
+      res = Math.max(res, gc.groups[gc.groups.length - 1].position.x + gc.groups[gc.groups.length - 1].width);
+    }
+  });
+  return res;
+}
+
+getNormalChannel(c: GroupChannel): Array<Array<Point>> {
+  const res:  Array<Array<Point>> = [];
+  const normals = [];
+
+  return res;
+}
+
+getNormalGroup(g): Array<Array<Point>> {
   const res:  Array<Array<Point>> = [];
   let maxWidth = 0;
   let id = 0;
-  g.group.channels.forEach(c => {
+  g.channels.forEach(c => {
     let xpos = 0;
     let shift = 1;
     c.patterns.forEach(p => {
@@ -218,7 +314,7 @@ getNormalGroup(g: GroupElement): Array<Array<Point>> {
 
   res.forEach(c => c.map(p => p.x /= maxWidth));
   res.forEach(c => { if (c[c.length - 1].x != 1) { c.push({ x: 1, y: c[c.length - 1].y }); }});
-  res.forEach(c => c.map(p => p.x = p.x * g.width + g.position.x ));
+  //  res.forEach(c => c.map(p => p.x = p.x * g.width + g.position.x ));
 
   return res;
 }
@@ -237,9 +333,13 @@ public saveBinary() {
     if (gc.groups.length > 0) {
       let maxCount = 0;
       gc.groups.forEach((g) => {
-        const normalGroup = this.getNormalGroup(g);
+        const normalGroup = this.getNormalGroup(g.group);
+        normalGroup.forEach(c => c.map(p => p.x = p.x * g.width + g.position.x ));
+        /*  console.log('normalGroup ', normalGroup);
+        normalGroup.forEach(c => c.map(p => p.x = p.x * g.width + g.position.x ));
+        console.log('normalGroup ', normalGroup);
+        */
         maxCount = Math.max(normalGroup.length, maxCount);
-        console.log('normalGroup.length', normalGroup.length);
 
         if (channels.length < channelPos + normalGroup.length) {
           channels = channels.concat(new Array<Point>(channelPos + normalGroup.length - channels.length));
