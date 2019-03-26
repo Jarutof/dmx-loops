@@ -214,6 +214,42 @@ export class EditGroupsComponent implements OnInit {
   onChannelMouseEnter(e, g, index) {
   }
 
+  onButtonTilt(x: number, y: number, power: number) {
+    this.model.groupChannels.forEach((gc, ci) => {
+      const temp: Array<ChannelsGroup> = [];
+      gc.groups.forEach((g, gi) => {
+        const newGroup = g.group.deepClone();
+        let alpha;
+
+        newGroup.name += '(' + gi + ',' + ci + ')';
+        newGroup.channels[x].patterns.forEach(pattern => {
+          pattern.getPoints().forEach((p) => {
+            alpha = 360 * ci / this.model.groupChannels.length;
+            // console.log(Math.sin(Math.PI * alpha / 360) * power, Math.PI * alpha / 360, alpha);
+            p.y = p.y + (Math.sin(Math.PI * alpha / 360) - 0.5) * power / 100.0;
+            // console.log(p.y);
+            // p.y = p.y * (this.model.groupChannels.length - ci) / this.model.groupChannels.length;
+          });
+        });
+        newGroup.channels[y].patterns.forEach(pattern => {
+          pattern.getPoints().forEach((p) => {
+            alpha = 360 * ci / this.model.groupChannels.length;
+            // alpha = 360 * ((ci + (this.model.groupChannels.length / 4)) % this.model.groupChannels.length) / this.model.groupChannels.length;
+            p.y = p.y - 0.5 * Math.sin(Math.PI * alpha / 180 + Math.PI) * power / 100.0;
+            // console.log(0.5 * Math.sin(Math.PI * alpha / 180 + Math.PI) + 0.5);
+            // p.y = p.y * (this.model.groupChannels.length - ci) / this.model.groupChannels.length;
+          });
+        });
+        temp.push(newGroup);
+        g.group = newGroup;
+        this.model.groups.push(newGroup);
+      });
+    });
+    this.model.GroupElementComponents.forEach(g => {
+      g.draw();
+    });
+  }
+
 
   onButtonRotation(numb: number) {
     const totalLength = this.model.getTotalLength();
@@ -228,7 +264,6 @@ export class EditGroupsComponent implements OnInit {
         let np;
         let pp;
         const totalWidth = groupElement.group.channels[numb].getWidth();
-        // groupElement.group.channels[numb].patterns.forEach(p => totalWidth += p.width);
         for (let i = 0; i < groupElement.group.channels[numb].patterns.length; i++) {
           const p = groupElement.group.channels[numb].patterns[i];
           np = p.getPoints().find(pt => {
@@ -244,34 +279,8 @@ export class EditGroupsComponent implements OnInit {
           pos += p.width;
         }
         const point: Point = {x, y: (x - pp.x) * (np.y - pp.y) / (np.x - pp.x) + pp.y};
-        console.log(point);
         tempChannels[ci].push(point);
-        // gc.insertPoint(point, numb);
-
       }
-      /*const x = ((ci + 1) % this.model.groupChannels.length) / this.model.groupChannels.length;
-      const groupElement = this.model.groupChannels[(ci + 1) % this.model.groupChannels.length].groups.find(g => x * totalLength >= g.position.x);
-      let pos = 0;
-      let np;
-      let pp;
-      let totalWidth = 0;
-      groupElement.group.channels[numb].patterns.forEach(p => totalWidth += p.width);
-
-      for (let i = 0; i < groupElement.group.channels[numb].patterns.length; i++) {
-        const p = groupElement.group.channels[numb].patterns[i];
-        np = p.getPoints().find(pt => {
-          const ptx = ((pt.x * p.width + pos) / totalWidth) * totalLength + groupElement.position.x;
-          return x * totalLength < ptx;
-        });
-        if (np) {
-          pp = p.getPoints()[p.getPoints().indexOf(np) - 1];
-          np = { x: ((np.x * p.width + pos) / totalWidth) * totalLength + groupElement.position.x, y: np.y };
-          pp = { x: ((pp.x * p.width + pos) / totalWidth) * totalLength + groupElement.position.x, y: pp.y };
-          break;
-        }
-        pos += p.width;
-      }
-      const point = {x, y: (x - pp.x) * (np.y - pp.y) / (np.x - pp.x) + pp.y}; */
       gc.groups.forEach((g, gi) => {
         const newGroup = g.group.deepClone();
         newGroup.name += '(' + gi + ',' + ci + ')';
@@ -281,10 +290,6 @@ export class EditGroupsComponent implements OnInit {
       tempChannels.forEach((c, i) => {
 
       });
-     // gc.insertPoint(point, numb);
-
-      // gc.insertRelativePoint(point);
-
     });
     this.model.groupChannels.forEach((gc, ci) => {
       tempChannels[ci].forEach((c, i) => {
@@ -303,8 +308,6 @@ export class EditGroupsComponent implements OnInit {
       const temp: Array<ChannelsGroup> = [];
       gc.groups.forEach((g, gi) => {
         const newGroup = g.group.deepClone();
-        console.log(newGroup, g.group);
-
         newGroup.name += '(' + gi + ',' + ci + ')';
         newGroup.channels[numb].patterns.forEach(pattern => {
           pattern.getPoints().forEach((p) => {

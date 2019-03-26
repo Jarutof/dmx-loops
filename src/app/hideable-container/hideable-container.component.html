@@ -1,4 +1,4 @@
 <div class="container">
   <div class="header" (click)="isHide = !isHide">{{ headerName +  (isHide ? " >": " ∨") }}</div>
-  <ng-content *ngIf="!isHide"></ng-content>
+  <ng-content  *ngIf="!isHide"></ng-content>
 </div>

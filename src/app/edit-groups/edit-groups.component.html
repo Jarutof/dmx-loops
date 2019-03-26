@@ -56,6 +56,29 @@
     <app-hideable-container headerName="rotation">
         <input #chanRot type="number" min="0" max="512" size="1">
         <button (click)="onButtonRotation(chanRot.value)" style="width: 100%;">apply</button>
-      </app-hideable-container>
+    </app-hideable-container>
+    <app-hideable-container headerName="tilt" >
+      <div style="display: flex; flex-direction: column">
+        <div class="effectContent">
+          <div>
+            x
+          </div>
+          <input #chanTiltX type="number" min="0" max="512" >
+        </div> 
+        <div class="effectContent">
+          <div>
+            y
+          </div>
+          <input #chanTiltY type="number" min="0" max="512">
+        </div>
+        <div class="effectContent">
+          <div>
+            power
+          </div>
+          <input #chanTiltPow type="range" min="0" max="100" style="width: 80px">
+        </div>
+        <button (click)="onButtonTilt(chanTiltX.value, chanTiltY.value, chanTiltPow.value)" style="width: 100%;">apply</button>
+      </div>
+    </app-hideable-container>
   </div>
 </div>
