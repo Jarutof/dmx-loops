@@ -57,7 +57,7 @@
         <input #chanRot type="number" min="0" max="512" size="1">
         <button (click)="onButtonRotation(chanRot.value)" style="width: 100%;">apply</button>
     </app-hideable-container>
-    <app-hideable-container headerName="tilt" >
+    <app-hideable-container headerName="tilt">
       <div style="display: flex; flex-direction: column">
         <div class="effectContent">
           <div>
@@ -79,6 +79,46 @@
         </div>
         <button (click)="onButtonTilt(chanTiltX.value, chanTiltY.value, chanTiltPow.value)" style="width: 100%;">apply</button>
       </div>
+    </app-hideable-container>
+    <app-hideable-container headerName="modificator">
+      <div class="effectContent">
+        <div>
+          channel
+        </div>
+        <input #chan type="number" min="0" max="512">
+      </div>
+      <div style="display: flex; flex-direction: column">
+        <select #modSel [selectedIndex]="modSelIndex" (change)="onModTypeChange(modSel.selectedIndex)">
+          <option>linear</option>
+          <option>curve</option>
+        </select>
+      </div>
+      <div [ngSwitch]="modSelIndex">
+        <div *ngSwitchCase="0" style="display: flex; flex-direction: column">
+          <div class="effectContent">
+            <div>
+              from
+            </div>
+            <input #inpFrom type="number" min="0" max="1" step="0.1">
+          </div> 
+          <div class="effectContent">
+            <div>
+              to
+            </div>
+            <input #inpTo type="number" min="0" max="1" step="0.1">
+          </div>
+          <button (click)="onButtonModificatorLinear(chan.value, inpFrom.value, inpTo.value)" style="width: 100%;">apply</button>
+        </div>
+
+        <div *ngSwitchCase="1">
+          <app-curve-parameter #curve style="height: 200px"></app-curve-parameter>
+          <button (click)="onButtonModificatorCurve(chan.value, curve)" style="width: 100%;">apply</button>
+        </div>
+        <div *ngSwitchDefault>
+        
+        </div>
+      </div>
+      
     </app-hideable-container>
   </div>
 </div>

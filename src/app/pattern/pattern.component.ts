@@ -25,7 +25,7 @@ export class PatternComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   drawer: Drawer;
-  value;
+
   listenerMouseMove: () => void;
   listenerMouseUp: () => void;
 

@@ -19,6 +19,9 @@ export class EditGroupsComponent implements OnInit {
   dragSize: {width: number; height: number};
   indexDragChannelGroup: number = -1;
   tempElement: GroupElement;
+
+  modSelIndex: number = 0;
+
   constructor(private renderer: Renderer2, public model: DmxModelService, public view: ViewParamsService, private commands: CommandsService) { }
   @ViewChild('container') container;
   @ViewChildren('groupChannel') groupChannelsComponents: QueryList<GroupChannelComponent>;
@@ -213,6 +216,19 @@ export class EditGroupsComponent implements OnInit {
 
   onChannelMouseEnter(e, g, index) {
   }
+
+  onModTypeChange(index: number) {
+    this.modSelIndex = index;
+  }
+
+  onButtonModificatorCurve(c: number, curve) {
+
+  }
+
+  onButtonModificatorLinear(c: number, from: number, to: number) {
+
+  }
+
 
   onButtonTilt(x: number, y: number, power: number) {
     this.model.groupChannels.forEach((gc, ci) => {

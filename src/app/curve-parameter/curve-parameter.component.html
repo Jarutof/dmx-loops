@@ -1,0 +1,27 @@
+<div [ngStyle]="{
+
+  'cursor': drawer.canResize ? 'e-resize':'pointer'
+
+  }" #container>
+  <canvas 
+    #canvasBack
+
+    
+    style="
+    z-index: 0;
+    position: absolute;
+    "
+    >
+  </canvas>
+  <canvas tabindex="0" 
+    style="
+    z-index: 1;
+    background: transparent;
+    position: absolute;
+    "
+    #canvas
+    >
+  </canvas>
+  
+  
+</div>
