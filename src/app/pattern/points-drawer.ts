@@ -60,11 +60,14 @@ export class PointsDrawer extends Drawer {
       const nPos =  { x: e.x - rect.left, y: e.y - rect.top };
       this.selectedPosition = nPos;
       const q = 10;
-      if (e.shiftKey) {
+      /*if (e.shiftKey) {
         this.selectedPosition = { x: Math.round(nPos.x / q) * q, y: Math.round(nPos.y / q) * q };
-      }
+      }*/
       this.isCtrlKey = e.ctrlKey;
       if (this.selectedPoint) {
+        if (e.shiftKey) {
+          this.selectedPosition = { x: Math.round(nPos.x / q) * q, y: Math.round(nPos.y / q) * q };
+        }
         this.selectedPoint.y = this.selectedPosition.y / this.height;
         if (this.selectedPoint.y < 0) {
           this.selectedPoint.y = 0;
@@ -85,9 +88,12 @@ export class PointsDrawer extends Drawer {
         }
       } else {
         if (this.isResize) {
-          this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
+          // this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
           if (e.shiftKey) {
+            this.setWidth(Math.round((this.savedWidth + this.selectedPosition.x - this.savedPosition.x) / 10) * 10);
             this.component.onresize.emit(this.component);
+          } else {
+            this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
           }
         }
       }
@@ -266,7 +272,7 @@ export class PointsDrawer extends Drawer {
         if (!this.isSelected && !this.isResize ) { return; }
         this.mouseMove = this.onMouseMoveButtonDown;
         this.listenerMouseUp = this.component.renderer.listen(document, 'mouseup', (event) => {
-          if (this.isResize) {
+          /*if (this.isResize) {
             const swidth = this.savedWidth;
             const nwidth = this.savedWidth + this.selectedPosition.x - this.savedPosition.x;
             this.component.commands.setCommands(() => {
@@ -274,7 +280,7 @@ export class PointsDrawer extends Drawer {
             }, () => {
               this.setWidth(nwidth);
             });
-          } else {
+          } else */{
             if (this.selectedPoint) {
               const index = this.pointIndex;
               const spoint = {x: 0, y: 0};

@@ -182,17 +182,19 @@ export class GroupElementComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ctx.strokeStyle = '#FFFFFF10';
           this.ctx.stroke();
         };
-
         this.mouseDown = () => {
           this.onMouseMoveButtonDown = (e) => {
             const rect: ClientRect = this.canvas.nativeElement.getBoundingClientRect();
             const q = 10;
             this.selectedPosition = { x: e.x - rect.left, y: e.y - rect.top };
             if (e.shiftKey) {
-              this.selectedPosition = { x: Math.floor(this.selectedPosition.x / q) * q, y: Math.floor(this.selectedPosition.y / q) * q };
+              // this.selectedPosition = { x: Math.floor(this.selectedPosition.x / q) * q, y: Math.floor(this.selectedPosition.y / q) * q };
+              this.setWidth((Math.floor(this.savedWidth + this.selectedPosition.x - this.savedPosition.x) / q) * q);
+            } else {
+              this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
             }
-            this.setWidth(this.savedWidth + this.selectedPosition.x - this.savedPosition.x);
           };
+
           this.isResize = true;
           this.savedPosition = {x: this.selectedPosition.x, y: this.selectedPosition.y};
           this.savedWidth = this.width;
