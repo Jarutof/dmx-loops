@@ -112,7 +112,7 @@ export class BezierCurve {
             point.x = Math.min(point.x, this.width);
             point.y = Math.min(point.y, this.height);
             point.x = Math.max(point.x, 0);
-            point.y = Math.max(point.y, 0);
+            point.y = Math.max(point.y, 10);
             this.ctx.lineTo(point.x, point.y);
             p += this.period;
         }
