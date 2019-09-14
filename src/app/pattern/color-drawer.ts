@@ -182,8 +182,6 @@ export class ColorDrawer extends Drawer {
     }
 
     findResizeArea() {
-        console.log('asd');
-
         if (this.selectedPosition.x > this.width - this.widthResizeArea) {
             this.canResize = true;
           this.drawResizeArea = () => {
@@ -195,8 +193,6 @@ export class ColorDrawer extends Drawer {
             this.ctx.stroke();
           };
           this.mouseDown = () => {
-            console.log('findResizeArea');
-
             this.isResize = true;
             this.savedPosition = {x: this.selectedPosition.x, y: this.selectedPosition.y};
             this.savedWidth = this.width;

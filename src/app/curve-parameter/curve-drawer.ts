@@ -7,32 +7,41 @@ export class BezierPoint {
     getDistance(p1: {x: number, y: number}, p2: {x: number, y: number}): number {
         return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
     }
-    setControl(id: number, dist: number) {
-        this.controls[id] = this.anchors[id];
+    setControl(p: Point, id: number) {
+        this.controls[id] = p;
+        this.anchors[id] = p;
+    }
+
+    getAnchorPoints() {
+        return [this.anchors[0], {x: this.anchors[0].x + this.anchors[1].x, y: this.anchors[0].y + this.anchors[1].y},  {x: this.anchors[3].x + this.anchors[2].x, y: this.anchors[3].y + this.anchors[2].y}, this.anchors[3]];
     }
 
     calcAnch(id: number, p: Point, dist: number, cId: number) {
         const d = this.getDistance(p, this.controls[cId]);
         const anch: Point = {x: p.x - this.controls[cId].x, y: p.y - this.controls[cId].y};
-        const norm: Point = { x: anch.x, y: anch.y};
-        norm.x /= d;
-        norm.y /= d;
+        const norm: Point = { x: anch.x / d, y: anch.y / d};
+        norm.x = Math.max(norm.x + this.controls[cId].x, this.controls[0].x) - this.controls[cId].x;
+        norm.x = Math.min(norm.x + this.controls[cId].x, this.controls[3].x) - this.controls[cId].x;
         anch.x = norm.x * dist;
         anch.y = norm.y * dist;
-        anch.x += this.controls[cId].x;
-        anch.y += this.controls[cId].y;
+        /* anch.x += this.controls[cId].x;
+        anch.y += this.controls[cId].y; */
         this.anchors[id] = anch;
         const midX = this.controls[0].x + (this.controls[3].x - this.controls[0].x) / 2;
         this.controls[id].x = midX;
         this.controls[id].y = this.controls[cId].y + midX * norm.y / Math.abs(norm.x);
+
+        this.controls[id].x -= this.controls[cId].x;
+        this.controls[id].y -= this.controls[cId].y;
+
     }
 
     setAnchor(id: number, p: Point, dist: number) {
         switch (id) {
             case 0:
             case 3:
-                this.controls[id] = p;
-                this.anchors[id] = p;
+                this.setControl(p, id);
+
             break;
             case 1:
             case 2:
@@ -67,35 +76,35 @@ export class BezierCurve {
         this.anchorDist = width * 0.2;
         const point = new BezierPoint();
         point.controls.push({ x: 0, y: 0.5 * height});
-        point.controls.push({ x: 0.2 * width, y: 0.8 * height});
-        point.controls.push({ x: 0.8 * width, y: 0.2 * height});
+        point.controls.push({ x: 0.2 * width, y: 0});
+        point.controls.push({ x: -0.2 * width, y: 0});
         point.controls.push({ x: 1 * width, y: 0.5 * height});
+
         point.anchors.push({ x: 0, y: 0.5 * height});
-        point.anchors.push({ x: 0.2 * width, y: 0.8 * height});
-        point.anchors.push({ x: 0.8 * width, y: 0.2 * height});
+        point.anchors.push({ x: 0.2 * width, y: 0});
+        point.anchors.push({ x: -0.2 * width, y: 0});
         point.anchors.push({ x: 1 * width, y: 0.5 * height});
         this.points = [point];
     }
-    /* getDistance(p1: {x: number, y: number}, p2: {x: number, y: number}): number {
-        return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-    }
-    getAnchor(cp: Point, p: Point) {
-        const anch: Point = {x: cp.x - p.x, y: cp.y - p.y};
-        const dist = this.getDistance({x: cp.x * this.width, y: cp.y * this.height}, {x: p.x * this.width, y: p.y * this.height});
-        anch.x /= dist;
-        anch.y /= dist;
-        anch.x *= this.width;
-        anch.y *= this.height;
-    } */
+
     addPoint(x: number, y: number) {
         // let point = new BezierPoint(0.1, 0.5, 0.9, 0.5, x, y);
     }
+
+    getValue(t: number) {
+        const cp1 = { x: this.points[0].controls[0].x + this.points[0].controls[1].x, y: this.points[0].controls[0].y + this.points[0].controls[1].y };
+        const cp2 = { x: this.points[0].controls[3].x + this.points[0].controls[2].x, y: this.points[0].controls[3].y + this.points[0].controls[2].y };
+        return (Math.pow(1 - t, 3) * this.points[0].controls[0].y + 3 *  Math.pow(1 - t, 2) * t * cp1.y + 3 * (1 - t) * Math.pow(t, 2) * cp2.y + Math.pow(t, 3) * this.points[0].controls[3].y) / this.height;
+    }
+
     getPoint(t: number): Point {
         // P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
-
-        const res: Point = { x: Math.pow(1 - t, 3) * this.points[0].controls[0].x + 3 *  Math.pow(1 - t, 2) * t * this.points[0].controls[1].x + 3 * (1 - t) * Math.pow(t, 2) * this.points[0].controls[2].x + Math.pow(t, 3) * this.points[0].controls[3].x,
-            y: Math.pow(1 - t, 3) * this.points[0].controls[0].y + 3 *  Math.pow(1 - t, 2) * t * this.points[0].controls[1].y + 3 * (1 - t) * Math.pow(t, 2) * this.points[0].controls[2].y + Math.pow(t, 3) * this.points[0].controls[3].y };
-
+        const cp1 = { x: this.points[0].controls[0].x + this.points[0].controls[1].x, y: this.points[0].controls[0].y + this.points[0].controls[1].y };
+        const cp2 = { x: this.points[0].controls[3].x + this.points[0].controls[2].x, y: this.points[0].controls[3].y + this.points[0].controls[2].y };
+        const res: Point = { x: Math.pow(1 - t, 3) * this.points[0].controls[0].x + 3 *  Math.pow(1 - t, 2) * t * cp1.x + 3 * (1 - t) * Math.pow(t, 2) * cp2.x + Math.pow(t, 3) * this.points[0].controls[3].x,
+            y: Math.pow(1 - t, 3) * this.points[0].controls[0].y + 3 *  Math.pow(1 - t, 2) * t * cp1.y + 3 * (1 - t) * Math.pow(t, 2) * cp2.y + Math.pow(t, 3) * this.points[0].controls[3].y };
+        /* const res: Point = { x: Math.pow(1 - t, 3) * this.points[0].controls[0].x + 3 *  Math.pow(1 - t, 2) * t * this.points[0].controls[1].x + 3 * (1 - t) * Math.pow(t, 2) * this.points[0].controls[2].x + Math.pow(t, 3) * this.points[0].controls[3].x,
+            y: Math.pow(1 - t, 3) * this.points[0].controls[0].y + 3 *  Math.pow(1 - t, 2) * t * this.points[0].controls[1].y + 3 * (1 - t) * Math.pow(t, 2) * this.points[0].controls[2].y + Math.pow(t, 3) * this.points[0].controls[3].y }; */
         return res;
     }
 
@@ -124,7 +133,7 @@ export class BezierCurve {
         this.ctx.fillStyle = '#7F7';
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
-        this.points[0].anchors.forEach(a => {
+        this.points[0].getAnchorPoints().forEach(a => {
             this.ctx.moveTo(a.x, a.y);
             this.ctx.arc(a.x, a.y, 4, 0, 2 * Math.PI);
         });
@@ -134,6 +143,7 @@ export class BezierCurve {
 
     }
 }
+
 export class CurveDrawer {
 
     public ctx: CanvasRenderingContext2D;
@@ -143,6 +153,7 @@ export class CurveDrawer {
 
     private colorBack: string = '#252526';
     public curve: BezierCurve;
+    timerId;
 
 
     component: CurveParameterComponent;
@@ -153,13 +164,12 @@ export class CurveDrawer {
     mouseMove(e: MouseEvent) {}
     constructor(p: CurveParameterComponent) {
         this.component = p;
-        // this.listenerMouseUp = this.component.renderer.listen(document, 'mouseup', (event) => {
 
         this.ctx = this.component.canvas.nativeElement.getContext('2d');
         this.ctxBack = this.component.canvasBack.nativeElement.getContext('2d');
         this.ctx.lineJoin = 'round';
-        this.height = this.component.container.nativeElement.clientHeight;
         this.width = this.component.container.nativeElement.clientWidth;
+        this.height = this.width;
         this.component.canvasBack.nativeElement.width = this.width;
         this.component.canvasBack.nativeElement.height = this.height;
         this.component.canvas.nativeElement.width = this.width;
@@ -198,9 +208,9 @@ export class CurveDrawer {
         }
     }
     onMouseLeave(e) {
+        clearInterval(this.timerId);
+
         if (e.buttons != 1) {
-            /* this.highlightedPoint = undefined;
-            this.selectedPosition = undefined; */
             if (this.listenerMouseMove) {
                 this.listenerMouseMove();
             }
@@ -209,71 +219,56 @@ export class CurveDrawer {
     }
     onKeyDown(e) {}
 
-
-
     onMouseHover(e: MouseEvent) {
-        const dists = [0, this.curve.anchorDist, this.curve.anchorDist, 0];
-        this.curve.points.forEach((p, pId) => {
+        this.mouseDown = () => {};
 
-            p.anchors.forEach((a, idx) => {
-                if (this.getDistance({ x: a.x, y: a.y }, { x: e.layerX, y: e.layerY }) < 3) {
+        this.draw();
+        let counter = 0;
+        clearInterval(this.timerId);
+        this.timerId = setTimeout(() => {
+            this.timerId = setInterval(() => {
+                counter++;
+                this.drawPointer({ x: e.layerX, y: e.layerY }, counter / 20);
+                if (counter == 20) {
+                    clearInterval(this.timerId);
+
+                }
+            }, 10);
+        }, 500);
+        
+        this.curve.points.forEach((p, pId) => {
+            p.getAnchorPoints().forEach((a, idx) => {
+                if (this.getDistance({ x: a.x, y: a.y }, { x: e.layerX, y: e.layerY }) < 5) {
                     this.mouseDown = (ev) => {
+                        clearInterval(this.timerId);
                         const point = { x: e.x - a.x, y: e.y - a.y };
-                        this.mouseMove = (event) => {
-                           /*  a.x = (event.x - point.x);
-                            a.y = (event.y - point.y); */
-                            p.setAnchor(idx, {x: event.x - point.x, y: event.y - point.y}, this.curve.anchorDist);
-                            // p.setControl(idx, dists[idx]);
-                            this.draw();
-                            return;
-                        };
+                        if (pId == 0 && idx == 0) {
+                            this.mouseMove = (event) => {
+                                let y = Math.max(event.y - point.y, 0);
+                                y = Math.min(y, this.height);
+
+                                p.setAnchor(idx, {x: 0, y}, this.curve.anchorDist);
+                                this.draw();
+                            };
+                        } else if (pId == (this.curve.points.length - 1) && idx == 3) {
+                            this.mouseMove = (event) => {
+                                let y = Math.max(event.y - point.y, 0);
+                                y = Math.min(y, this.height);
+                                p.setAnchor(idx, {x: this.width, y }, this.curve.anchorDist);
+                                this.draw();
+                            };
+                        } else {
+                            this.mouseMove = (event) => {
+                                let y = Math.max(event.y - point.y, 0);
+                                y = Math.min(y, this.height);
+                                p.setAnchor(idx, {x: event.x - point.x, y}, this.curve.anchorDist);
+                                this.draw();
+                            };
+                        }
                     };
                 }
+
             });
-            /* if (this.getDistance({ x: p.anchors[1].x, y: p.anchors[1].y }, { x: e.layerX, y: e.layerY }) < 3) {
-                this.mouseDown = (ev) => {
-                    const point = { x: e.x - p.anchors[1].x, y: e.y - p.anchors[1].y };
-                    this.mouseMove = (event) => {
-                        p.anchors[1].x = (event.x - point.x);
-                        p.anchors[1].y = (event.y - point.y);
-                        p.setAnchor(1, 1);
-
-                        this.draw();
-                        return;
-                    };
-                };
-            } */
-            /*const cp = p.getCapturedPoint({ x: e.layerX, y: e.layerY });
-            if (cp) {
-                    const point = { x: e.x - p.cp1x * this.width, y: e.y - p.cp1y * this.height };
-                    this.mouseDown = (ev) => {
-                    p.
-                };
-            }*/
-            /*if (this.getDistance({ x: p.cp1x * this.width, y: p.cp1y * this.height }, { x: e.layerX, y: e.layerY }) < 3) {
-                this.mouseDown = (ev) => {
-                    const point = { x: e.x - p.cp1x * this.width, y: e.y - p.cp1y * this.height };
-                    this.mouseMove = (event) => {
-                        p.cp1x = (event.x - point.x) / this.width;
-                        p.cp1y = (event.y - point.y) / this.height;
-                        this.draw();
-                        return;
-                    };
-                };
-            }
-            if (this.getDistance({ x: p.cp2x * this.width, y: p.cp2y * this.height }, { x: e.layerX, y: e.layerY }) < 3) {
-                this.mouseDown = (ev) => {
-                    const point = { x: e.x - p.cp2x * this.width, y: e.y - p.cp2y * this.height };
-                    this.mouseMove = (event) => {
-                        console.log('mouseMove');
-
-                        p.cp2x = (event.x - point.x) / this.width;
-                        p.cp2y = (event.y - point.y) / this.height;
-                        this.draw();
-                        return;
-                    };
-                };
-            }*/
         });
     }
 
@@ -299,81 +294,25 @@ export class CurveDrawer {
         }
         this.ctxBack.stroke();
         this.ctxBack.closePath();
-
-
-
-      /* this.ctxBack.shadowOffsetX = 0;
-      this.ctxBack.shadowOffsetY = 0;
-      this.ctxBack.shadowBlur = 0;
-      this.ctxBack.beginPath();
-      this.ctxBack.rect(0, 0, this.width, this.height);
-      this.ctxBack.fillStyle = this.colorBack;
-      this.ctxBack.fill();
-      this.ctxBack.closePath();
-      this.ctxBack.beginPath();
-      this.ctxBack.shadowColor = '#000';
-      this.ctxBack.shadowBlur = 4;
-      this.ctxBack.lineWidth = 1;
-      this.ctxBack.strokeStyle = '#666';
-      this.ctxBack.moveTo(0, 0);
-      this.ctxBack.lineTo(this.width, 0);
-      this.ctxBack.moveTo(0, this.height);
-      this.ctxBack.lineTo(this.width, this.height);
-      this.ctxBack.moveTo(0, this.height / 2);
-      this.ctxBack.lineTo(this.width, this.height / 2);
-      this.ctxBack.moveTo(0, this.height / 4);
-      this.ctxBack.lineTo(this.width, this.height / 4);
-      this.ctxBack.moveTo(0, this.height * 3 / 4);
-      this.ctxBack.lineTo(this.width, this.height * 3 / 4);
-      this.ctxBack.stroke();
-      this.ctxBack.beginPath();
-      this.ctxBack.strokeStyle = '#808080';
-      this.ctxBack.shadowColor = '#DD8';
-      this.ctxBack.shadowOffsetX = 0;
-      this.ctxBack.shadowOffsetY = 0;
-      this.ctxBack.shadowBlur = 10;
-      this.ctxBack.lineWidth = 1;
-      this.ctxBack.moveTo(0.5, 0);
-      this.ctxBack.lineTo(0.5, this.height);
-      this.ctxBack.moveTo(this.width - 0.5, 0);
-      this.ctxBack.lineTo(this.width - 0.5, this.height);
-      this.ctxBack.stroke();
-      this.ctxBack.closePath(); */
     }
+
+    drawPointer(p: Point, c: number) {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.curve.draw();
+
+        this.ctx.beginPath();
+        this.ctx.fillStyle = '#FFFFFF' + ('00' + Math.round(c * 255).toString(16)).slice(-2);
+        this.ctx.lineWidth = 0;
+        this.ctx.beginPath();
+        this.ctx.moveTo(p.x, p.y);
+        this.ctx.arc(p.x, p.y, 14 - c * 10, 0, 2 * Math.PI);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+
     draw() {
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.curve.draw();
-        /*this.ctx.strokeStyle = '#7F7';
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-
-        this.curve.points.forEach(p => {
-        this.ctx.moveTo(p.controls[0].x, p.controls[0].y);
-        this.ctx.bezierCurveTo(p.controls[1].x, p.controls[1].y, p.controls[2].x, p.controls[2].y, p.controls[3].x, p.controls[3].y);
-        });
-        this.ctx.stroke();
-        this.ctx.closePath();
-        this.ctx.beginPath();
-
-        this.ctx.strokeStyle = '#FFF';
-        this.ctx.fillStyle = '#FFF';
-        this.ctx.lineWidth = 1;
-        this.ctx.moveTo(this.curve.x * this.width, this.curve.y * this.height);
-
-        this.curve.points.forEach(p => {
-            this.ctx.lineTo(p.cp1x * this.width, p.cp1y * this.height);
-            this.ctx.moveTo(p.cp1x * this.width, p.cp1y * this.height);
-            this.ctx.arc(p.cp1x * this.width, p.cp1y * this.height, 4, 0, 2 * Math.PI);
-            this.ctx.moveTo(p.cp2x * this.width, p.cp2y * this.height);
-            this.ctx.arc(p.cp2x * this.width, p.cp2y * this.height, 4, 0, 2 * Math.PI);
-            this.ctx.moveTo(p.cp2x * this.width, p.cp2y * this.height);
-            this.ctx.lineTo(p.x * this.width, p.y * this.height);
-        });
-
-        this.ctx.stroke();
-        this.ctx.fill();
-
-        this.ctx.closePath();*/
     }
 
     getDistance(p1: {x: number, y: number}, p2: {x: number, y: number}): number {

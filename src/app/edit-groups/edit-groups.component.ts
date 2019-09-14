@@ -5,6 +5,7 @@ import { CommandsService } from '../commands.service';
 import { AppRoutingModule } from '../app-routing.module';
 import { GroupChannelComponent } from './group-channel/group-channel.component';
 import { saveAs } from 'file-saver';
+import { CurveParameterComponent } from '../curve-parameter/curve-parameter.component';
 
 @Component({
   selector: 'app-edit-groups',
@@ -221,8 +222,26 @@ export class EditGroupsComponent implements OnInit {
     this.modSelIndex = index;
   }
 
-  onButtonModificatorCurve(c: number, curve) {
-
+  onButtonModificatorCurve(c: number, curve: CurveParameterComponent) {
+    this.model.groupChannels.forEach((gc, ci) => {
+      const temp: Array<ChannelsGroup> = [];
+      gc.groups.forEach((g, gi) => {
+        const newGroup = g.group.deepClone();
+        newGroup.name += '(' + gi + ',' + ci + ')';
+        newGroup.channels[c].patterns.forEach(pattern => {
+          pattern.getPoints().forEach((p) => {
+            console.log(ci / this.model.groupChannels.length, curve.drawer.curve.getValue(ci / this.model.groupChannels.length));
+            p.y = (1 - p.y) * curve.drawer.curve.getValue(ci / this.model.groupChannels.length);
+          });
+        });
+        temp.push(newGroup);
+        g.group = newGroup;
+        this.model.groups.push(newGroup);
+      });
+    });
+    this.model.GroupElementComponents.forEach(g => {
+      g.draw();
+    });
   }
 
   onButtonModificatorLinear(c: number, from: number, to: number) {
